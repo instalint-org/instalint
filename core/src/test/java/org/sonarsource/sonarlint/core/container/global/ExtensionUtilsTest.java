@@ -1,0 +1,127 @@
+/*
+ * SonarLint Core - Implementation (trimmed)
+ * Copyright (C) 2009-2017 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+package org.sonarsource.sonarlint.core.container.global;
+
+import org.junit.Test;
+import org.sonar.api.BatchComponent;
+import org.sonar.api.batch.BatchSide;
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.ce.ComputeEngineSide;
+import org.sonar.api.server.ServerSide;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ExtensionUtilsTest {
+
+  @Test
+  public void shouldBeBatchInstantiationStrategy() {
+    assertThat(ExtensionUtils.isInstantiationStrategy(BatchService.class, InstantiationStrategy.PER_BATCH)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new BatchService(), InstantiationStrategy.PER_BATCH)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(ProjectService.class, InstantiationStrategy.PER_BATCH)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new ProjectService(), InstantiationStrategy.PER_BATCH)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(DefaultService.class, InstantiationStrategy.PER_BATCH)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new DefaultService(), InstantiationStrategy.PER_BATCH)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(DefaultScannerService.class, InstantiationStrategy.PER_BATCH)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new DefaultScannerService(), InstantiationStrategy.PER_BATCH)).isFalse();
+
+  }
+
+  @Test
+  public void shouldBeProjectInstantiationStrategy() {
+    assertThat(ExtensionUtils.isInstantiationStrategy(BatchService.class, InstantiationStrategy.PER_PROJECT)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new BatchService(), InstantiationStrategy.PER_PROJECT)).isFalse();
+    assertThat(ExtensionUtils.isInstantiationStrategy(ProjectService.class, InstantiationStrategy.PER_PROJECT)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new ProjectService(), InstantiationStrategy.PER_PROJECT)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(DefaultService.class, InstantiationStrategy.PER_PROJECT)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new DefaultService(), InstantiationStrategy.PER_PROJECT)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(DefaultScannerService.class, InstantiationStrategy.PER_PROJECT)).isTrue();
+    assertThat(ExtensionUtils.isInstantiationStrategy(new DefaultScannerService(), InstantiationStrategy.PER_PROJECT)).isTrue();
+
+  }
+
+  @Test
+  public void testIsSonarLintSide() {
+    assertThat(ExtensionUtils.isSonarLintSide(BatchService.class)).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(ScannerService.class)).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(new BatchService())).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(DeprecatedBatchService.class)).isFalse();
+
+    assertThat(ExtensionUtils.isSonarLintSide(ServerService.class)).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(new ServerService())).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(new WebServerService())).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(new ComputeEngineService())).isFalse();
+    assertThat(ExtensionUtils.isSonarLintSide(new DefaultSonarLintService())).isTrue();
+  }
+
+  @BatchSide
+  @InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+  public static class BatchService {
+
+  }
+
+  @ScannerSide
+  @InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+  public static class ScannerService {
+
+  }
+
+  public static class DeprecatedBatchService implements BatchComponent {
+
+  }
+
+  @BatchSide
+  @InstantiationStrategy(InstantiationStrategy.PER_PROJECT)
+  public static class ProjectService {
+
+  }
+
+  @BatchSide
+  public static class DefaultService {
+
+  }
+
+  @ScannerSide
+  public static class DefaultScannerService {
+
+  }
+
+  @SonarLintSide
+  public static class DefaultSonarLintService {
+
+  }
+
+  @ServerSide
+  public static class ServerService {
+
+  }
+
+  @ServerSide
+  public static class WebServerService {
+
+  }
+
+  @ComputeEngineSide
+  public static class ComputeEngineService {
+
+  }
+
+}

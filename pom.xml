@@ -1,37 +1,110 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.instalint</groupId>
   <artifactId>instalint</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+
   <name>InstaLint</name>
 
   <modules>
+    <module>instalint-cli</module>
+    <module>client-api</module>
     <module>core</module>
-    <module>api</module>
-    <module>cli</module>
   </modules>
 
   <properties>
-    <sonarqube.version>6.4-RC2</sonarqube.version>
-    <sonar-ws.version>6.6.0.27690</sonar-ws.version>
-    <sonar-scanner-protocol.version>6.4-RC2</sonar-scanner-protocol.version>
-    <logback.version>1.1.3</logback.version>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <sonarqube.version>6.4</sonarqube.version>
+    <sonarlint.version>2.18</sonarlint.version>
     <slf4j.version>1.7.21</slf4j.version>
     <log4j.version>2.5</log4j.version>
-    <protobuf.version>3.2.0</protobuf.version>
-    <protobuf.compiler>${settings.localRepository}/com/google/protobuf/protoc/${protobuf.version}/protoc-${protobuf.version}-${os.detected.classifier}.exe</protobuf.compiler>
+
+    <sonar-javascript-plugin.version>2.21.1.4786</sonar-javascript-plugin.version>
+    <sonar-python-plugin.version>1.7.0.1195</sonar-python-plugin.version>
+    <sonar-php-plugin.version>2.10.0.2087</sonar-php-plugin.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>3.0.1</version>
+        <groupId>org.sonarsource.sonarqube</groupId>
+        <artifactId>sonar-plugin-api</artifactId>
+        <version>${sonarqube.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.sonar</groupId>
+        <artifactId>sonar-classloader</artifactId>
+        <version>1.0</version>
       </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sonarlint-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sonarlint-client-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>3.0.2</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.16.18</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.1.3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>19.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picocontainer</groupId>
+        <artifactId>picocontainer</artifactId>
+        <version>2.15</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.10</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.stefanbirkner</groupId>
+        <artifactId>system-rules</artifactId>
+        <version>1.16.0</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -52,4 +125,17 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
