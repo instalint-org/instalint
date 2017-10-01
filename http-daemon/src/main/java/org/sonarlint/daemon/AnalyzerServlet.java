@@ -19,43 +19,17 @@
  */
 package org.sonarlint.daemon;
 
-import io.grpc.stub.StreamObserver;
+import io.instalint.core.AnalyzerExecutor;
+import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.sonarlint.daemon.services.StandaloneSonarLintImpl;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon.AnalyzeContentRequest;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon.AnalyzeContentRequest.Builder;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon.Issue;
-
-import static java.util.Collections.singletonList;
 
 public class AnalyzerServlet extends HttpServlet {
 
-  private Map<LanguagePlugin, StandaloneSonarLintImpl> sonarLintRepository = new HashMap<>();
   private Backend backend;
-
-  private StandaloneSonarLintImpl initSonarLint(LanguagePlugin languagePlugin) {
-    StandaloneSonarLintImpl sonarLint = sonarLintRepository.get(languagePlugin);
-    if (sonarLint == null) {
-      try {
-        sonarLint = new StandaloneSonarLintImpl(singletonList(languagePlugin.getUrl()));
-      } catch (Exception e) {
-        throw new IllegalStateException("Cannot initialize analyzers", e);
-      }
-      sonarLintRepository.put(languagePlugin, sonarLint);
-    }
-    return sonarLint;
-  }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -74,20 +48,23 @@ public class AnalyzerServlet extends HttpServlet {
       }
     }
 
-    String language = getLanguage(req);
+    String languageParam = getLanguage(req);
     String languageVersionParam = getLanguageVersion(req);
-    LanguagePlugin languagePlugin = backend.retrieve(language, languageVersionParam);
-    String languageVersion = languagePlugin.getLanguageVersion();
-    StandaloneSonarLintImpl sonarlint = initSonarLint(languagePlugin);
-
-    List<Issue> issues = getIssues(sonarlint, code, language);
-    List<SonarlintDaemon.RuleDetails> rules = getRules(sonarlint, issues);
+    LanguagePlugin languagePlugin = backend.retrieve(languageParam, languageVersionParam);
 
     if ("true".equals(req.getParameter("store"))) {
       storedAs = backend.store(code);
     }
 
-    new ResponseMessage(language, languageVersion, storedAs, code, issues, rules).writeTo(resp);
+    AnalyzerExecutor executor = new AnalyzerExecutor() {
+      @Override
+      public AnalyzerResult execute(LanguagePlugin languagePlugin, String code) {
+        return null;
+      }
+    };
+    AnalyzerResult result = executor.execute(languagePlugin, code);
+
+    new ResponseMessage(languageParam, languagePlugin.getLanguageVersion(), storedAs, code, result).writeTo(resp);
   }
 
   private String getLanguageVersion(HttpServletRequest req) {
@@ -107,54 +84,5 @@ public class AnalyzerServlet extends HttpServlet {
       throw new IllegalStateException("Parameter language is required");
     }
     return language;
-  }
-
-  private List<Issue> getIssues(StandaloneSonarLintImpl sonarlint, String postBody, String language) {
-    Builder build = AnalyzeContentRequest.newBuilder();
-    build.setCharset("UTF-8");
-
-    build.setContent(postBody);
-    build.setLanguage(language);
-
-    List<Issue> issues = new ArrayList<>();
-    sonarlint.analyzeContent(build.build(), new StreamObserver<Issue>() {
-
-      @Override
-      public void onCompleted() {
-      }
-
-      @Override
-      public void onError(Throwable arg0) {
-      }
-
-      @Override
-      public void onNext(Issue arg0) {
-        issues.add(arg0);
-      }
-    });
-    return issues;
-  }
-
-  private List<SonarlintDaemon.RuleDetails> getRules(StandaloneSonarLintImpl sonarlint, List<Issue> issues) {
-    List<SonarlintDaemon.RuleDetails> rules = new ArrayList<>();
-    Set<String> ruleKeys = issues.stream().map(Issue::getRuleKey).collect(Collectors.toSet());
-    for (String ruleKey : ruleKeys) {
-      SonarlintDaemon.RuleKey ruleKeyParsed = SonarlintDaemon.RuleKey.newBuilder().setKey(ruleKey).build();
-      sonarlint.getRuleDetails(ruleKeyParsed, new StreamObserver<SonarlintDaemon.RuleDetails>() {
-        @Override
-        public void onNext(SonarlintDaemon.RuleDetails ruleDetails) {
-          rules.add(ruleDetails);
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-        }
-
-        @Override
-        public void onCompleted() {
-        }
-      });
-    }
-    return rules;
   }
 }

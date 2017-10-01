@@ -9,9 +9,9 @@
   </parent>
 
   <artifactId>sonarlint-http-daemon</artifactId>
-  <packaging>war</packaging>
   <version>2.15-SNAPSHOT</version>
   <name>InstaLint Http Daemon</name>
+  <packaging>war</packaging>
 
   <build>
     <pluginManagement>
@@ -37,6 +37,18 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <!--<groupId>${project.groupId}</groupId>-->
+      <groupId>io.instalint</groupId>
+      <artifactId>sonarlint-client-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonarsource.sonarqube</groupId>
+      <artifactId>sonar-plugin-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
