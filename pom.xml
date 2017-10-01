@@ -9,7 +9,8 @@
   <name>InstaLint</name>
 
   <modules>
-    <module>instalint-cli</module>
+    <module>cli</module>
+    <module>http-daemon</module>
     <module>client-api</module>
     <module>core</module>
   </modules>
