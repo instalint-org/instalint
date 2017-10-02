@@ -22,8 +22,6 @@ package org.sonarlint.daemon;
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +60,6 @@ public class ResponseMessage {
       writeLines(json);
       writePagination(json);
       writeIssues(json);
-      writeRules(json);
       writeStore(json);
       writeHighlightings(json);
       writeSymbolRefs(json);
@@ -126,54 +123,6 @@ public class ResponseMessage {
       .prop("pageSize", issueCount)
       .prop("total", issueCount)
       .endObject();
-  }
-
-  private void writeRules(JsonWriter json) {
-    class RuleDetails {
-      private String key;
-      private String name;
-      private String language;
-
-      private RuleDetails(String key, String name, String language) {
-        this.key = key;
-        this.name = name;
-        this.language = language;
-      }
-
-      private String getKey() {
-        return key;
-      }
-
-      private String getName() {
-        return name;
-      }
-
-      private String getLanguage() {
-        return language;
-      }
-    }
-    List<RuleDetails> rules = new ArrayList<>();
-    Set<String> seen = new HashSet<>();
-
-    for (Issue issue : analyzerResult.issues()) {
-      String ruleKey = issue.getRuleKey();
-      if (seen.add(ruleKey)) {
-        rules.add(new RuleDetails(ruleKey, issue.getRuleName(), language));
-      }
-    }
-
-    // TODO what are these used for? are they necessary?
-    json.name("rules");
-    json.beginArray();
-    for (RuleDetails rule : rules) {
-      json.beginObject();
-      json.prop("key", rule.getKey());
-      json.prop("name", rule.getName());
-      json.prop("lang", rule.getLanguage());
-      json.prop("langName", rule.getLanguage());
-      json.endObject();
-    }
-    json.endArray();
   }
 
   private void writeIssues(JsonWriter json) {
