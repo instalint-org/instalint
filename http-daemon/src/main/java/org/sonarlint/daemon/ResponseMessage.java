@@ -25,12 +25,15 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.utils.text.JsonWriter;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -61,6 +64,8 @@ public class ResponseMessage {
       writeIssues(json);
       writeRules(json);
       writeStore(json);
+      writeHighlightings(json);
+      writeSymbolRefs(json);
       json.endObject();
     }
     resp.setStatus(200);
@@ -200,5 +205,52 @@ public class ResponseMessage {
     if (storedAs != null) {
       json.prop("storedAs", storedAs);
     }
+  }
+
+  private void writeHighlightings(JsonWriter json) {
+    json.name("highlightings");
+    json.beginArray();
+    for (Highlighting highlighting : analyzerResult.highlightings()) {
+      json.beginObject()
+        .prop("startLine", highlighting.textRange().start().line())
+        .prop("endLine", highlighting.textRange().end().line())
+        .prop("startOffset", highlighting.textRange().start().lineOffset())
+        .prop("endOffset", highlighting.textRange().end().lineOffset())
+        .endObject();
+    }
+    json.endArray();
+  }
+
+  private void writeSymbolRefs(JsonWriter json) {
+    json.name("symbolRefs");
+    json.beginArray();
+    for (Map.Entry<TextRange, Set<TextRange>> entry : analyzerResult.symbolRefs().entrySet()) {
+      json.beginObject();
+      {
+        {
+          TextRange range = entry.getKey();
+          json.name("symbol")
+            .beginObject()
+            .prop("startLine", range.start().line())
+            .prop("endLine", range.end().line())
+            .prop("startOffset", range.start().lineOffset())
+            .prop("endOffset", range.end().lineOffset())
+            .endObject();
+        }
+
+        json.name("locations").beginArray();
+        for (TextRange range : entry.getValue()) {
+            json.beginObject()
+            .prop("startLine", range.start().line())
+            .prop("endLine", range.end().line())
+            .prop("startOffset", range.start().lineOffset())
+            .prop("endOffset", range.end().lineOffset())
+            .endObject();
+        }
+        json.endArray();
+      }
+      json.endObject();
+    }
+    json.endArray();
   }
 }

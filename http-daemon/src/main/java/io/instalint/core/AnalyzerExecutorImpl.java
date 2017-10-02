@@ -12,11 +12,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.sonar.api.batch.fs.TextRange;
+import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonarlint.daemon.LanguagePlugin;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
@@ -88,13 +91,24 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
 
     LogOutput logOutput = (formattedMessage, level) -> { };
 
+    List<Highlighting> highlightings = new ArrayList<>();
     HighlightingListener highlightingListener =
-      highlighting -> highlighting.forEach(hl -> {});
+      highlighting -> highlighting.forEach(hl -> highlightings.add(new Highlighting() {
+        @Override
+        public TypeOfText type() {
+          return hl.getTextType();
+        }
 
-    SymbolRefsListener symbolRefsListener =
-      referencesBySymbol -> {};
+        @Override
+        public TextRange textRange() {
+          return hl.range();
+        }
+      }));
 
-    AnalysisResults results = engine.analyze(
+    Map<TextRange, Set<TextRange>> symbolRefs = new HashMap<>();
+    SymbolRefsListener symbolRefsListener = symbolRefs::putAll;
+
+    engine.analyze(
       config,
       issueListener,
       highlightingListener,
@@ -105,6 +119,16 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       @Override
       public List<Issue> issues() {
         return issues;
+      }
+
+      @Override
+      public List<Highlighting> highlightings() {
+        return highlightings;
+      }
+
+      @Override
+      public Map<TextRange, Set<TextRange>> symbolRefs() {
+        return symbolRefs;
       }
     };
   }
