@@ -16,4 +16,5 @@ public interface AnalyzerResult {
 
   Map<TextRange, Set<TextRange>> symbolRefs();
 
+  boolean success();
 }

@@ -20,6 +20,8 @@ public class AnalyzerExecutorImplTest {
     "        console.log(i);\n" +
     "    }";
 
+  private static final String invalidExampleCode = "function hello(";
+
   private static LanguagePlugin newLanguagePlugin() {
     try {
       return new LanguagePlugin(new File("../core/target/plugins/sonar-javascript-plugin-3.1.1.5128.jar").toURI().toURL(), null);
@@ -35,18 +37,30 @@ public class AnalyzerExecutorImplTest {
   public void should_report_issues() {
     AnalyzerResult result = execute(validExampleCode);
     assertThat(result.issues()).hasSize(1);
+    assertThat(result.success()).isTrue();
   }
 
   @Test
   public void should_report_highlightings() {
     AnalyzerResult result = execute(validExampleCode);
     assertThat(result.highlightings()).hasSize(6);
+    assertThat(result.success()).isTrue();
   }
 
   @Test
   public void should_report_symbol_refs() {
     AnalyzerResult result = execute(validExampleCode);
     assertThat(result.symbolRefs()).hasSize(4);
+    assertThat(result.success()).isTrue();
+  }
+
+  @Test
+  public void should_report_analysis_failed() {
+    AnalyzerResult result = execute(invalidExampleCode + validExampleCode);
+    assertThat(result.success()).isFalse();
+    assertThat(result.issues()).isEmpty();
+    assertThat(result.highlightings()).isEmpty();
+    assertThat(result.symbolRefs()).isEmpty();
   }
 
   private AnalyzerResult execute(String code) {
