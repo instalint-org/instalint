@@ -1,5 +1,5 @@
 /*
- * SonarLint Core - Client API (trimmed)
+ * SonarQube
  * Copyright (C) 2009-2017 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
@@ -17,32 +17,39 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.client.api.common.analysis;
+package org.sonarlint.daemon;
 
-import java.util.List;
-import javax.annotation.CheckForNull;
+import java.net.URL;
 
-public interface Issue extends IssueLocation {
+public class LanguagePlugin {
+  private final URL url;
+  private final String languageVersion;
 
-  String getSeverity();
-  
-  @CheckForNull
-  String getType();
-
-  String getRuleKey();
-
-  String getRuleName();
-  
-  List<Flow> flows();
-
-  /**
-   * @return null for global issues
-   */
-  @CheckForNull
-  ClientInputFile getInputFile();
-  
-  interface Flow {
-    List<IssueLocation> locations();
+  public LanguagePlugin(URL url, String languageVersion) {
+    this.url = url;
+    this.languageVersion = languageVersion;
   }
 
+  public URL getUrl() {
+    return url;
+  }
+
+  public String getLanguageVersion() {
+    return languageVersion;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    LanguagePlugin that = (LanguagePlugin) o;
+
+    return url != null ? url.equals(that.url) : that.url == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return url != null ? url.hashCode() : 0;
+  }
 }

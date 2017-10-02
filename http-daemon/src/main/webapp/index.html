@@ -1,0 +1,434 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style type="text/css">
+        .issue {
+            background-color: #fff;
+            border: 1px solid #e6e6e6;
+            margin: 5px 5px 0 5px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 41px;
+            overflow: auto;
+            transition: background-color .3s ease,border-color .3s ease;
+        }
+        .issue:first-of-type {
+            border: 1px solid #dd4040;
+            background-color: #ffeaea;
+        }
+        .issue:hover {
+            background-color: #ffeaea;
+        }
+        .issueDotDotDot {
+            background: rgba(75,159,213,.3);
+            color: #4b9fd5;
+            height: 7px;
+            width: 11px;
+            padding: 3px 4px 3px 3px;
+            line-height: 1px;
+            display: inline-block;
+            margin: 0 4px 8px 4px;
+            position: relative;
+            top: -3px;
+            font-size: 15px;
+        }
+
+        html {
+            min-height:100vh;
+        }
+
+        body {
+            display: grid;
+            grid-template-rows: 30px 55px auto;
+            grid-template-columns: 1px 30% 30% auto 1px;
+            grid-row-gap: 40px;
+            grid-column-gap: 2%;
+            grid-template-areas:
+              "header-cell header-cell header-cell header-cell header-cell"
+              "a languageSelect-cell languageSelect-cell languageSelect-cell b"
+              "c input-cell output-cell result-cell d"
+            ;
+            justify-items: stretch;
+            align-items: stretch;
+
+            margin: 0 0 10px 0;
+            font-family: Helvetica Neue,Segoe UI,Helvetica,Arial,sans-serif;
+            background-color: #4b9fd5;
+            color: white;
+            min-height:97vh;
+        }
+
+        .broad {
+            display: inline;
+        }
+        .narrow {
+            display: none;
+        }
+
+        @media (max-width: 800px) {
+
+            .broad {
+                display: none;
+            }
+            .narrow {
+                display: inline;
+            }
+
+            body {
+                grid-template-rows: 30px auto auto auto auto;
+                grid-template-columns: 5px auto 5px;
+                grid-row-gap: 10px;
+                grid-column-gap: 0px;
+                grid-template-areas:
+                  "header-cell header-cell header-cell"
+                  "a languageSelect-cell b"
+                  "c input-cell d"
+                  "e output-cell f"
+                  "g result-cell h"
+                ;
+            }
+        }
+
+        #header {
+            grid-area: header-cell;
+            background-color: #262626;
+
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: auto auto;
+            grid-row-gap: 0;
+            grid-column-gap: 10px;
+            grid-template-areas:
+              "logo-cell link-cell"
+            ;
+
+        }
+
+        #logo {
+            font-size: 16px;
+            justify-self: start;
+            align-self: center;
+            padding: 0 0 0 10px;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        #link {
+            grid-area: link-cell;
+            justify-self: end;
+            align-self: center;
+            padding: 0 8px 4px 0;
+            margin: 0;
+        }
+
+        #link a {
+            color: white;
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        #languageSelect {
+            grid-area: languageSelect-cell;
+            font-size: 44px;
+            font-family:Roboto,sans-serif;
+            font-weight: 300;
+            margin: 0;
+        }
+
+        #input {
+            grid-area: input-cell;
+            background: white;
+            color: black;
+            overflow: auto;
+            border: none;
+
+            font-family: Consolas,Liberation Mono,Menlo,Courier,monospace;
+            font-size: 12px;
+            line-height: 18px;
+            color: #666;
+
+            padding: 10px;
+            white-space: pre;
+        }
+
+        #output {
+            grid-area: output-cell;
+            background: white;
+            color: black;
+            overflow: auto;
+
+            font-family: Consolas,Liberation Mono,Menlo,Courier,monospace;
+            font-size: 12px;
+            line-height: 18px;
+            color: #666;
+
+            padding: 10px;
+            white-space: pre;
+        }
+
+        #result {
+          grid-area: result-cell;
+
+          padding: 10px 10px 15px 10px;
+          background: #f3f3f3;
+          color: black;
+          overflow: auto;
+          transition: opacity 0.3s;
+        }
+
+        select {
+          padding: 5px 35px 5px 5px;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          background: url(https://upload.wikimedia.org/wikipedia/commons/4/4f/TriangleArrow-Down.svg) 96% / 8% no-repeat #eee;
+
+          margin: 0px 0px 0px 0px;
+          position: relative;
+          top: -6px;
+          border: solid 1px #91d315;
+          background-color: #91d315;
+          color: #225463;
+          height: 44px;
+          width: 170px;
+          text-transform: uppercase;
+          font-family: Roboto,sans-serif;
+          text-align: center;
+          font-weight: 500;
+          font-size: 16px;
+        }
+
+        /* CAUTION: IE hackery ahead */
+        select::-ms-expand {
+            display: none; /* remove default arrow in IE 10 and 11 */
+        }
+
+        .source-line-code-issue {
+            display: inline-block;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAGCAYAAAAPDoR2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1M0M2Rjk4M0M3QUYxMUUzODkzRUREMUM5OTNDMjY4QSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1M0M2Rjk4NEM3QUYxMUUzODkzRUREMUM5OTNDMjY4QSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjUzQzZGOTgxQzdBRjExRTM4OTNFREQxQzk5M0MyNjhBIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjUzQzZGOTgyQzdBRjExRTM4OTNFREQxQzk5M0MyNjhBIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+bcqJtQAAAEhJREFUeNpi+G+swwDGDAwgbAWlwZiJAQFCgfgwEIfDRaC67ID4NRDnQ2kQnwFZwgFqnANMAQOUYY9sF0wBiCGH5CBkrAgQYACuWi4sSGW8yAAAAABJRU5ErkJggg==);
+            background-repeat: repeat-x;
+            background-size: 4px;
+            background-position: bottom;
+        }
+    </style>
+    <title>Instalint - online code inspection</title>
+    <script>
+
+    languageVersion = "latest";
+    storedAs = "";
+
+	function onInit() {
+	    useLocationHash();
+   	    updateLocationHash();
+    	window.onhashchange = onLocationHashChange;
+    	analyze(false);
+	}
+
+	function onLocationHashChange() {
+	    useLocationHash();
+	    updateLocationHash();
+	}
+
+	function onLanguageChange() {
+	    languageVersion = "latest";
+	    updateLocationHash();
+	    analyze(false);
+	}
+
+	function onInput() {
+	    storedAs = "";
+	    analyze(false);
+	}
+
+	function onStoreRequest() {
+	    analyze(true);
+	}
+
+    function useLocationHash() {
+	    var path = document.location.hash;
+	    var pathPattern = new RegExp("^#(/.*)+$", "");
+
+	    var pathMatches = pathPattern.exec(path);
+        var newLanguageValue = "JavaScript";
+        var newLanguageVersion = "latest";
+        var newStoredAs = "";
+        var languageSelect = document.getElementById("language");
+	    if (pathMatches) {
+	        var pathPartPattern = new RegExp("^(/(.*?))(/.*$|$)", "");
+
+	        var languageMatches = pathPartPattern.exec(pathMatches[1]);
+	        if (languageMatches) {
+                var language = languageMatches[2];
+
+                for (var optionCounter in languageSelect.options) {
+                    var option = languageSelect.options[optionCounter];
+                    if (option.label == language || option.value == language) {
+                        newLanguageValue = option.value;
+                    }
+                }
+
+                var languageVersionMatches = pathPartPattern.exec(languageMatches[3]);
+                if (languageVersionMatches) {
+                    newLanguageVersion = languageVersionMatches[2];
+
+                    var storedAsMatches = pathPartPattern.exec(languageVersionMatches[3]);
+                    if (storedAsMatches) {
+                        newStoredAs = storedAsMatches[2];
+                    }
+                }
+	        }
+	    }
+
+	    if (languageSelect.value != newLanguageValue || languageVersion != newLanguageVersion || storedAs != newStoredAs) {
+	        if (languageSelect.value != newLanguageValue) {
+    	        languageSelect.value = newLanguageValue;
+	        }
+	        if (languageVersion != newLanguageVersion) {
+    	        languageVersion = newLanguageVersion;
+    	    }
+	        if (storedAs != newStoredAs) {
+    	        storedAs = newStoredAs;
+    	    }
+    	    updateLocationHash();
+    	    analyze(false);
+	    }
+    }
+
+    function updateLocationHash() {
+   	    var languageSelect = document.getElementById("language");
+	    var language = languageSelect.value;
+	    var languageSelectLabel = "JavaScript";
+        for (var optionCounter in languageSelect.options) {
+            var option = languageSelect.options[optionCounter];
+            if (option.value == language) {
+                languageSelectLabel = option.label;
+            }
+        }
+
+        var newPath = "#/" + language;
+        if (languageVersion != "latest") {
+            newPath += "/" + languageVersion;
+            if (storedAs != "") {
+                newPath += "/" + storedAs;
+            }
+        }
+
+	    if (document.location.hash != newPath) {
+	        document.location.hash = newPath;
+	    }
+    }
+
+	function analyze(store) {
+		document.getElementById("result").style.opacity = 0.5;
+        var loc = window.location;
+        var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "") + "/" + loc.pathname.split('/')[1];
+		var url = baseUrl + (baseUrl.endsWith("/") ? "" : "/") + "analyze";
+		var method = "POST";
+		var async = true;
+		var request = new XMLHttpRequest();
+		request.onload = function () {
+
+		    var response = JSON.parse(request.responseText);
+
+		    document.getElementById("result").innerHTML = "";
+            for (var issueCounter in response.issues) {
+                var issue = response.issues[issueCounter];
+                document.getElementById("result").innerHTML +=
+                '<div class="issue">'
+                + issue.message
+                + '<div class="issueDotDotDot">...</div>'
+                + '</div>'
+                ;
+                document.getElementById("result").style.opacity = 1;
+            }
+
+            var newContent = "";
+            var firstLine = true;
+            for (var line in response.lines) {
+                if (firstLine == true) {
+                    firstLine = false;
+                } else {
+                    newContent += "<br/>";
+                }
+                var l = response.lines[line].code;
+                newContent += l;
+            }
+
+            if (storedAs != "" || store) {
+                document.getElementById("input").value = response.code;
+                if (response.storedAs) {
+                    storedAs = response.storedAs;
+                    languageVersion = response.languageVersion;
+                } else {
+                    storedAs = "";
+                }
+            }
+            updateLocationHash();
+            document.getElementById("output").innerHTML = newContent;
+		}
+
+        var language = document.getElementById("language").value;
+        var code = document.getElementById("input").value;
+
+        if (code === "" && storedAs === "") {
+            document.getElementById("output").innerHTML = newContent;
+        } else {
+            request.open(method, url, async);
+            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            var params = "language=" + encodeURIComponent(language) + "&languageVersion=" + encodeURIComponent(languageVersion);
+            if (storedAs != "") {
+                params += "&restore=" + storedAs;
+            } else {
+                if (store == true) {
+                    params += "&store=true";
+                }
+                params += "&code=" + encodeURIComponent(code);
+            }
+            request.send(params);
+            document.getElementById("result").style.opacity = 0.7;
+		}
+	}
+    </script>
+</head>
+
+<body onload="onInit()">
+
+<div id="header">
+
+    <h1 id="logo">
+        instalint
+    </h1>
+
+    <div id="link">
+        <a id="store" href="javascript:onStoreRequest()">Generate link</a>
+        <a id="about" href="/about">About</a>
+    </div>
+</div>
+
+<h2 id="languageSelect">
+    <span class="broad">Analyze your</span>
+    <span class="narrow">Analyze</span>
+    <select id="language" onchange="onLanguageChange()" >
+        <option value="JavaScript" selected="selected">JavaScript</option><!-- js -->
+        <option value="PHP">PHP</option><!-- php -->
+        <option value="Python">Python</option><!-- py -->
+    </select>
+    <span class="broad">code</span>
+</h2>
+
+<textarea id="input" oninput="onInput()" onchange="onInput()" cols="80" rows="20" spellcheck="false">arr = [1, 2, 3];
+for (var x in arr) {
+console.log(x);
+}
+</textarea>
+
+<div id="output"></div>
+
+<div id="result"></div>
+
+</body>
+</html>

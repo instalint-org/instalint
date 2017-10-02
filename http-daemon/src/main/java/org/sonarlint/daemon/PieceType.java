@@ -1,5 +1,5 @@
 /*
- * SonarLint Core - Client API (trimmed)
+ * SonarLint Daemon
  * Copyright (C) 2009-2017 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
@@ -17,32 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.client.api.common.analysis;
+package org.sonarlint.daemon;
 
-import java.util.List;
-import javax.annotation.CheckForNull;
-
-public interface Issue extends IssueLocation {
-
-  String getSeverity();
-  
-  @CheckForNull
-  String getType();
-
-  String getRuleKey();
-
-  String getRuleName();
-  
-  List<Flow> flows();
-
-  /**
-   * @return null for global issues
-   */
-  @CheckForNull
-  ClientInputFile getInputFile();
-  
-  interface Flow {
-    List<IssueLocation> locations();
-  }
-
+public enum PieceType {
+  LINE_START,
+  LINE_END,
+  UNDERLINE_START,
+  UNDERLINE_END,
+  TEXT
 }

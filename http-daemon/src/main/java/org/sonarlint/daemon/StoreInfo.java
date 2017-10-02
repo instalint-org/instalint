@@ -1,5 +1,5 @@
 /*
- * SonarLint Core - Client API (trimmed)
+ * SonarQube
  * Copyright (C) 2009-2017 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
@@ -17,32 +17,33 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.client.api.common.analysis;
+package org.sonarlint.daemon;
 
-import java.util.List;
-import javax.annotation.CheckForNull;
+public class StoreInfo {
 
-public interface Issue extends IssueLocation {
+  private String languageVersion;
+  private String storedAs;
 
-  String getSeverity();
-  
-  @CheckForNull
-  String getType();
-
-  String getRuleKey();
-
-  String getRuleName();
-  
-  List<Flow> flows();
-
-  /**
-   * @return null for global issues
-   */
-  @CheckForNull
-  ClientInputFile getInputFile();
-  
-  interface Flow {
-    List<IssueLocation> locations();
+  public StoreInfo(String languageVersion, String storedAs) {
+    this.languageVersion = languageVersion;
+    this.storedAs = storedAs;
   }
 
+  public String getLanguageVersion() {
+    return languageVersion;
+  }
+
+  public StoreInfo setLanguageVersion(String languageVersion) {
+    this.languageVersion = languageVersion;
+    return this;
+  }
+
+  public String getStoredAs() {
+    return storedAs;
+  }
+
+  public StoreInfo setStoredAs(String storedAs) {
+    this.storedAs = storedAs;
+    return this;
+  }
 }
