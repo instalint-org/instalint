@@ -14,6 +14,12 @@ public class AnalyzerExecutorImplTest {
 
   static LanguagePlugin languagePlugin = newLanguagePlugin();
 
+  private static final String validExampleCode =
+    "    var arr = [1, 2, 3];\n" +
+    "    for (i in arr) {\n" +
+    "        console.log(i);\n" +
+    "    }";
+
   private static LanguagePlugin newLanguagePlugin() {
     try {
       return new LanguagePlugin(new File("../core/target/plugins/sonar-javascript-plugin-3.1.1.5128.jar").toURI().toURL(), null);
@@ -27,14 +33,20 @@ public class AnalyzerExecutorImplTest {
 
   @Test
   public void should_report_issues() {
-    String code = "    var arr = [1, 2, 3];\n" +
-      "    for (i in arr) {\n" +
-      "        console.log(i);\n" +
-      "    }";
-
-    AnalyzerResult result = execute(code);
-
+    AnalyzerResult result = execute(validExampleCode);
     assertThat(result.issues()).hasSize(1);
+  }
+
+  @Test
+  public void should_report_highlightings() {
+    AnalyzerResult result = execute(validExampleCode);
+    assertThat(result.highlightings()).hasSize(6);
+  }
+
+  @Test
+  public void should_report_symbol_refs() {
+    AnalyzerResult result = execute(validExampleCode);
+    assertThat(result.symbolRefs()).hasSize(4);
   }
 
   private AnalyzerResult execute(String code) {
