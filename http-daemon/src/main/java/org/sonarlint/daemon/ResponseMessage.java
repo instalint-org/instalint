@@ -212,6 +212,8 @@ public class ResponseMessage {
     json.beginArray();
     for (Highlighting highlighting : analyzerResult.highlightings()) {
       json.beginObject()
+        .prop("type", highlighting.type().name())
+        .prop("cssClass", highlighting.type().cssClass())
         .prop("startLine", highlighting.textRange().start().line())
         .prop("endLine", highlighting.textRange().end().line())
         .prop("startOffset", highlighting.textRange().start().lineOffset())
