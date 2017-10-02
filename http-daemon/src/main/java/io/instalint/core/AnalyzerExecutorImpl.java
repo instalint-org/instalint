@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.CheckForNull;
 import org.sonarlint.daemon.LanguagePlugin;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
@@ -34,7 +33,7 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       .build();
     StandaloneSonarLintEngine engine = new StandaloneSonarLintEngineImpl(globalConfig);
 
-    Path tmp = null;
+    Path tmp;
     try {
       tmp = newTempDir();
     } catch (IOException e) {
@@ -42,7 +41,7 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       throw new IllegalStateException("Could not create temp dir");
     }
 
-    Path workDir = null;
+    Path workDir;
     try {
       workDir = newDir(tmp.resolve("work"));
     } catch (IOException e) {
