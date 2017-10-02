@@ -19,14 +19,21 @@
  */
 package org.sonarsource.sonarlint.core.client.api.common.analysis;
 
+import javax.annotation.CheckForNull;
+
 public interface IssueLocation {
-  int getStartLine();
+  @CheckForNull
+  Integer getStartLine();
 
-  int getEndLine();
+  @CheckForNull
+  Integer getEndLine();
 
-  int getStartLineOffset();
+  @CheckForNull
+  Integer getStartLineOffset();
 
-  int getEndLineOffset();
+  @CheckForNull
+  Integer getEndLineOffset();
   
+  @CheckForNull
   String getMessage();
 }
