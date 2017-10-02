@@ -19,11 +19,10 @@
  */
 package org.sonarlint.daemon;
 
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 
 public class Underliner {
 
@@ -37,7 +36,7 @@ public class Underliner {
     });
   }
 
-  public List<CodePiece> underline(List<SonarlintDaemon.Issue> issues) {
+  public List<CodePiece> underline(List<Issue> issues) {
     issues.forEach(issue -> {
       int pieceIndex = 0;
       for (int linesToSkip = issue.getStartLine(); linesToSkip > 0; pieceIndex++) {

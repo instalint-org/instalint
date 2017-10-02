@@ -19,17 +19,19 @@
  */
 package org.sonarlint.daemon;
 
+import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.sonar.api.utils.text.JsonWriter;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon.Issue;
-import org.sonarsource.sonarlint.daemon.proto.SonarlintDaemon.RuleDetails;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -39,16 +41,14 @@ public class ResponseMessage {
   private final String languageVersion;
   private final String storedAs;
   private final String code;
-  private final List<Issue> issues;
-  private final List<RuleDetails> rules;
+  private final AnalyzerResult analyzerResult;
 
-  public ResponseMessage(String language, String languageVersion, String storedAs, String code, List<Issue> issues, List<RuleDetails> rules) {
+  public ResponseMessage(String language, String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
     this.language = language;
     this.languageVersion = languageVersion;
     this.storedAs = storedAs;
     this.code = code;
-    this.issues = issues;
-    this.rules = rules;
+    this.analyzerResult = analyzerResult;
   }
 
   public void writeTo(HttpServletResponse resp) throws IOException {
@@ -70,9 +70,9 @@ public class ResponseMessage {
     json.name("lines");
     json.beginArray();
     AtomicInteger i = new AtomicInteger();
-    AtomicReference<String> line = new AtomicReference("");
+    AtomicReference<String> line = new AtomicReference<>("");
 
-    List<CodePiece> pieces = new Underliner(code).underline(issues);
+    List<CodePiece> pieces = new Underliner(code).underline(analyzerResult.issues());
 
     pieces.forEach(piece -> {
       if (piece.getType() == PieceType.LINE_START) {
@@ -110,18 +110,53 @@ public class ResponseMessage {
   }
 
   private void writePagination(JsonWriter json) {
-    json.prop("total", issues.size());
+    int issueCount = analyzerResult.issues().size();
+    json.prop("total", issueCount);
     json.prop("p", 1);
-    json.prop("ps", issues.size());
+    json.prop("ps", issueCount);
     json.name("paging")
       .beginObject()
       .prop("pageIndex", 1)
-      .prop("pageSize", issues.size())
-      .prop("total", issues.size())
+      .prop("pageSize", issueCount)
+      .prop("total", issueCount)
       .endObject();
   }
 
   private void writeRules(JsonWriter json) {
+    class RuleDetails {
+      private String key;
+      private String name;
+      private String language;
+
+      private RuleDetails(String key, String name, String language) {
+        this.key = key;
+        this.name = name;
+        this.language = language;
+      }
+
+      private String getKey() {
+        return key;
+      }
+
+      private String getName() {
+        return name;
+      }
+
+      private String getLanguage() {
+        return language;
+      }
+    }
+    List<RuleDetails> rules = new ArrayList<>();
+    Set<String> seen = new HashSet<>();
+
+    for (Issue issue : analyzerResult.issues()) {
+      String ruleKey = issue.getRuleKey();
+      if (seen.add(ruleKey)) {
+        rules.add(new RuleDetails(ruleKey, issue.getRuleName(), language));
+      }
+    }
+
+    // TODO what are these used for? are they necessary?
     json.name("rules");
     json.beginArray();
     for (RuleDetails rule : rules) {
@@ -138,14 +173,12 @@ public class ResponseMessage {
   private void writeIssues(JsonWriter json) {
     json.name("issues");
     json.beginArray();
-    for (Issue issue : issues) {
+    for (Issue issue : analyzerResult.issues()) {
       json.beginObject();
       json.prop("rule", issue.getRuleKey());
-      json.prop("severity", issue.getSeverity().name());
+      json.prop("severity", issue.getSeverity());
       json.prop("message", issue.getMessage());
-      RuleDetails rule = rules.stream().filter(r -> r.getKey().equals(issue.getRuleKey())).findFirst()
-        .orElseThrow(() -> new RuntimeException("Cannot find rule "+issue.getRuleKey()));
-      json.prop("type", rule.getType());
+      json.prop("type", issue.getType());
 
       json.name("textRange")
         .beginObject()

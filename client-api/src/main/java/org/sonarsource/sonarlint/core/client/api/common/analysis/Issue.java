@@ -29,29 +29,9 @@ public interface Issue extends IssueLocation {
   @CheckForNull
   String getType();
 
-  @CheckForNull
-  @Override
-  String getMessage();
-
   String getRuleKey();
 
   String getRuleName();
-  
-  @CheckForNull
-  @Override
-  Integer getStartLine();
-
-  @CheckForNull
-  @Override
-  Integer getStartLineOffset();
-
-  @CheckForNull
-  @Override
-  Integer getEndLine();
-
-  @CheckForNull
-  @Override
-  Integer getEndLineOffset();
   
   List<Flow> flows();
 
