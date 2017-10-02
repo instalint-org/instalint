@@ -24,8 +24,8 @@
     <slf4j.version>1.7.21</slf4j.version>
     <log4j.version>2.5</log4j.version>
 
-    <sonar-javascript-plugin.version>2.21.1.4786</sonar-javascript-plugin.version>
-    <sonar-python-plugin.version>1.7.0.1195</sonar-python-plugin.version>
+    <sonar-javascript-plugin.version>3.1.1.5128</sonar-javascript-plugin.version>
+    <sonar-python-plugin.version>1.8.0.1496</sonar-python-plugin.version>
     <sonar-php-plugin.version>2.10.0.2087</sonar-php-plugin.version>
   </properties>
 
