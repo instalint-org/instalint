@@ -20,6 +20,7 @@
 package org.sonarlint.daemon;
 
 import io.instalint.core.AnalyzerExecutor;
+import io.instalint.core.AnalyzerExecutorImpl;
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -56,12 +57,7 @@ public class AnalyzerServlet extends HttpServlet {
       storedAs = backend.store(code);
     }
 
-    AnalyzerExecutor executor = new AnalyzerExecutor() {
-      @Override
-      public AnalyzerResult execute(LanguagePlugin languagePlugin, String code) {
-        return null;
-      }
-    };
+    AnalyzerExecutor executor = new AnalyzerExecutorImpl();
     AnalyzerResult result = executor.execute(languagePlugin, code);
 
     new ResponseMessage(languageParam, languagePlugin.getLanguageVersion(), storedAs, code, result).writeTo(resp);
