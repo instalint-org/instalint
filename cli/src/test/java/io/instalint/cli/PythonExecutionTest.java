@@ -7,7 +7,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 public class PythonExecutionTest extends AnalyzerExecutionTest {
   @BeforeClass
   public static void beforeClass() {
-    analyzerFilename = "sonar-python-plugin-1.7.0.1195.jar";
+    analyzerFilename = "sonar-python-plugin-1.8.0.1496.jar";
 
     analyzerFilesExtension = "py";
 

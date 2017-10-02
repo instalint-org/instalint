@@ -16,7 +16,7 @@ public class AnalyzerExecutorImplTest {
 
   private static LanguagePlugin newLanguagePlugin() {
     try {
-      return new LanguagePlugin(new File("../core/target/plugins/sonar-javascript-plugin-2.21.1.4786.jar").toURI().toURL(), null);
+      return new LanguagePlugin(new File("../core/target/plugins/sonar-javascript-plugin-3.1.1.5128.jar").toURI().toURL(), null);
     } catch (MalformedURLException e) {
       e.printStackTrace();
       fail();
@@ -34,8 +34,7 @@ public class AnalyzerExecutorImplTest {
 
     AnalyzerResult result = execute(code);
 
-    assertThat(result.issues()).isNotEmpty();
-    assertThat(result.issues()).hasSize(3);
+    assertThat(result.issues()).hasSize(1);
   }
 
   private AnalyzerResult execute(String code) {

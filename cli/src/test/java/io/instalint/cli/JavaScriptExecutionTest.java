@@ -6,14 +6,14 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 public class JavaScriptExecutionTest extends AnalyzerExecutionTest {
   @BeforeClass
   public static void beforeClass() {
-    analyzerFilename = "sonar-javascript-plugin-2.21.1.4786.jar";
+    analyzerFilename = "sonar-javascript-plugin-3.1.1.5128.jar";
 
     analyzerFilesExtension = "js";
 
     expected = expected()
       .fileCount(2)
       .failedFileCount(1)
-      .issueCount(3)
+      .issueCount(1)
       .highlight(TypeOfText.KEYWORD, range(1, 0, 1, 3))
       .highlight(TypeOfText.KEYWORD, range(2, 0, 2, 3))
       .highlight(TypeOfText.KEYWORD, range(2, 7, 2, 9))
