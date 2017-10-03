@@ -18,6 +18,7 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonarlint.daemon.LanguagePlugin;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
@@ -108,7 +109,7 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     Map<TextRange, Set<TextRange>> symbolRefs = new HashMap<>();
     SymbolRefsListener symbolRefsListener = symbolRefs::putAll;
 
-    engine.analyze(
+    AnalysisResults results = engine.analyze(
       config,
       issueListener,
       highlightingListener,
@@ -129,6 +130,11 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       @Override
       public Map<TextRange, Set<TextRange>> symbolRefs() {
         return symbolRefs;
+      }
+
+      @Override
+      public boolean success() {
+        return results.failedAnalysisFiles().isEmpty();
       }
     };
   }

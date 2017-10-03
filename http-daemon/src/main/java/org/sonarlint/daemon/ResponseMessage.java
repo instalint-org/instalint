@@ -66,6 +66,7 @@ public class ResponseMessage {
       writeStore(json);
       writeHighlightings(json);
       writeSymbolRefs(json);
+      writeSuccess(json);
       json.endObject();
     }
     resp.setStatus(200);
@@ -254,5 +255,9 @@ public class ResponseMessage {
       json.endObject();
     }
     json.endArray();
+  }
+
+  private void writeSuccess(JsonWriter json) {
+    json.prop("success", analyzerResult.success());
   }
 }
