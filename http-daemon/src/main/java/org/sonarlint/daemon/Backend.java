@@ -64,7 +64,7 @@ public class Backend {
 
     if (sourceRepository == null) {
       sourceRepository = new SourceRepository();
-      sourceRepository.init();
+      sourceRepository.init(workDir);
     }
   }
 
