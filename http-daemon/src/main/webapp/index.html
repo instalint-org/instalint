@@ -335,16 +335,19 @@
 		    var response = JSON.parse(request.responseText);
 
 		    document.getElementById("result").innerHTML = "";
+		    if (!response.success) {
+                document.getElementById("result").innerHTML +=
+                '<div class="issue">Parsing failed. Please make sure that your code does not contain any syntax errors.</div>';
+            }
             for (var issueCounter in response.issues) {
                 var issue = response.issues[issueCounter];
                 document.getElementById("result").innerHTML +=
                 '<div class="issue">'
                 + issue.message
                 + '<div class="issueDotDotDot">...</div>'
-                + '</div>'
-                ;
-                document.getElementById("result").style.opacity = 1;
+                + '</div>';
             }
+            document.getElementById("result").style.opacity = 1;
 
             var newContent = "";
             var firstLine = true;
