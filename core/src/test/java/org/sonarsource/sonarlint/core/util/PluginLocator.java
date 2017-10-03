@@ -25,7 +25,7 @@ import java.net.URL;
 
 public class PluginLocator {
 
-  public static final String SONAR_JAVASCRIPT_PLUGIN_JAR = "sonar-javascript-plugin-2.21.1.4786.jar";
+  public static final String SONAR_JAVASCRIPT_PLUGIN_JAR = "sonar-javascript-plugin-3.1.1.5128.jar";
 
   public static URL getJavaScriptPluginUrl() {
     return getPluginUrl(SONAR_JAVASCRIPT_PLUGIN_JAR);
