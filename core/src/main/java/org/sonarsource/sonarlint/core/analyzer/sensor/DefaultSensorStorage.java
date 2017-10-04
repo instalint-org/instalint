@@ -37,32 +37,32 @@ import org.sonar.api.batch.sensor.symbol.internal.DefaultSymbolTable;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.MessageException;
 import org.sonarsource.sonarlint.core.analyzer.issue.DefaultClientIssue;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
 import org.sonarsource.sonarlint.core.container.analysis.filesystem.SonarLintInputFile;
-import org.sonarsource.sonarlint.core.container.model.DefaultAnalysisResult;
 
 public class DefaultSensorStorage implements SensorStorage {
 
   private final ActiveRules activeRules;
   private final Rules rules;
   private final IssueListener issueListener;
-  private final DefaultAnalysisResult analysisResult;
   private final HighlightingListener highlightingListener;
   private final SymbolRefsListener symbolRefsListener;
+  private final AnalysisErrorsListener analysisErrorsListener;
 
   public DefaultSensorStorage(ActiveRules activeRules, Rules rules,
-                              IssueListener issueListener, DefaultAnalysisResult analysisResult,
+                              IssueListener issueListener,
                               HighlightingListener highlightingListener,
-                              SymbolRefsListener symbolRefsListener) {
+                              SymbolRefsListener symbolRefsListener,
+                              AnalysisErrorsListener analysisErrorsListener) {
     this.activeRules = activeRules;
     this.rules = rules;
     this.issueListener = issueListener;
-    this.analysisResult = analysisResult;
     this.highlightingListener = highlightingListener;
     this.symbolRefsListener = symbolRefsListener;
+    this.analysisErrorsListener = analysisErrorsListener;
   }
 
   @Override
@@ -125,8 +125,7 @@ public class DefaultSensorStorage implements SensorStorage {
 
   @Override
   public void store(AnalysisError analysisError) {
-    ClientInputFile clientInputFile = ((SonarLintInputFile) analysisError.inputFile()).getClientInputFile();
-    analysisResult.addFailedAnalysisFile(clientInputFile);
+    analysisErrorsListener.handle(analysisError.message(), analysisError.location());
   }
 
   @Override

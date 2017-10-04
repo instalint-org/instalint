@@ -23,7 +23,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -33,7 +34,6 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConf
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 import org.sonarsource.sonarlint.core.container.standalone.StandaloneGlobalContainer;
 import org.sonarsource.sonarlint.core.log.SonarLintLogging;
-import org.sonarsource.sonarlint.core.util.LoggedErrorHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -64,21 +64,19 @@ public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintE
   }
 
   @Override
-  public AnalysisResults analyze(StandaloneAnalysisConfiguration configuration,
-                                 IssueListener issueListener,
-                                 HighlightingListener highlightingListener,
-                                 SymbolRefsListener symbolRefsListener,
-                                 @Nullable LogOutput logOutput) {
+  public void analyze(StandaloneAnalysisConfiguration configuration,
+                      IssueListener issueListener,
+                      HighlightingListener highlightingListener,
+                      SymbolRefsListener symbolRefsListener,
+                      AnalysisErrorsListener analysisErrorsListener,
+                      FileIndexerListener fileIndexerListener,
+                      @Nullable LogOutput logOutput) {
     checkNotNull(configuration);
     checkNotNull(issueListener);
     setLogging(logOutput);
-    LoggedErrorHandler errorHandler = new LoggedErrorHandler(configuration.inputFiles());
-    SonarLintLogging.setErrorHandler(errorHandler);
     rwl.readLock().lock();
     try {
-      AnalysisResults results = globalContainer.analyze(configuration, issueListener, highlightingListener, symbolRefsListener);
-      errorHandler.getErrorFiles().forEach(results.failedAnalysisFiles()::add);
-      return results;
+      globalContainer.analyze(configuration, issueListener, highlightingListener, symbolRefsListener, analysisErrorsListener, fileIndexerListener);
     } catch (RuntimeException e) {
       throw SonarLintWrappedException.wrap(e);
     } finally {
@@ -93,5 +91,4 @@ public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintE
       SonarLintLogging.set(this.logOutput);
     }
   }
-
 }
