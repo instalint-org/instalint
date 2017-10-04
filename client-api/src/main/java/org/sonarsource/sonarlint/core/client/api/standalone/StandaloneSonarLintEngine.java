@@ -21,11 +21,11 @@ package org.sonarsource.sonarlint.core.client.api.standalone;
 
 import javax.annotation.Nullable;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 
 /**
  * Entry point for SonarLint in standalone mode.
@@ -36,11 +36,11 @@ public interface StandaloneSonarLintEngine {
    * Trigger an analysis
    */
   void analyze(StandaloneAnalysisConfiguration configuration,
-                          IssueListener issueListener,
-                          HighlightingListener highlightingListener,
-                          SymbolRefsListener symbolRefsListener,
-                          AnalysisErrorsListener analysisErrorsListener,
-                          FileIndexerListener fileIndexerListener,
-                          @Nullable LogOutput logOutput);
+    IssueListener issueListener,
+    HighlightingListener highlightingListener,
+    SymbolRefsListener symbolRefsListener,
+    AnalysisErrorsListener analysisErrorsListener,
+    FileIndexerListener fileIndexerListener,
+    @Nullable LogOutput logOutput);
 
 }

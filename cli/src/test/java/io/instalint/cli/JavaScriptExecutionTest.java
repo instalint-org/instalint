@@ -27,8 +27,7 @@ public class JavaScriptExecutionTest extends AnalyzerExecutionTest {
       .symbolRef(range(2, 5, 2, 6),
         ranges(range(3, 16, 3, 17)))
       .symbolRef(range(3, 4, 3, 11),
-        ranges())
-    ;
+        ranges());
 
     result = analyzerHelper();
   }

@@ -57,7 +57,7 @@ public class DefaultSensorContext implements SensorContext {
   private final SonarRuntime sqRuntime;
 
   public DefaultSensorContext(InputModule module, Settings settings, FileSystem fs, ActiveRules activeRules,
-                              SensorStorage sensorStorage, SonarRuntime sqRuntime) {
+    SensorStorage sensorStorage, SonarRuntime sqRuntime) {
     this.module = module;
     this.settings = settings;
     this.fs = fs;

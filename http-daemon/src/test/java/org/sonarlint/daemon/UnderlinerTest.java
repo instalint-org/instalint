@@ -19,7 +19,6 @@
  */
 package org.sonarlint.daemon;
 
-
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
@@ -72,11 +71,11 @@ public class UnderlinerTest {
   private void assertPieces(String content, List<Issue> issues, CodePiece... expected) {
     Assert.assertEquals(Arrays.asList(expected), new Underliner(content).underline(issues));
   }
-  
+
   IssueBuilder issueBuilder() {
     return new IssueBuilder();
   }
-  
+
   static class IssueBuilder {
 
     private int startLine;
@@ -93,7 +92,7 @@ public class UnderlinerTest {
       this.startLineOffset = startLineOffset;
       return this;
     }
-    
+
     public IssueBuilder setEndLine(int endLine) {
       this.endLine = endLine;
       return this;
@@ -103,7 +102,7 @@ public class UnderlinerTest {
       this.endLineOffset = endLineOffset;
       return this;
     }
-    
+
     Issue build() {
       return new Issue() {
         @Override

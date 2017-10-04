@@ -39,9 +39,9 @@ public class LanguagePluginRepository {
 
   public LanguagePlugin retrieve(String language, String languageVersion, Properties properties) {
     if ("latest".equals(languageVersion)) {
-      languageVersion = properties.getProperty(language.toLowerCase(Locale.ENGLISH)+".latestVersion");
+      languageVersion = properties.getProperty(language.toLowerCase(Locale.ENGLISH) + ".latestVersion");
     }
-    String fileProperty = properties.getProperty(language.toLowerCase(Locale.ENGLISH)+".plugin." + languageVersion);
+    String fileProperty = properties.getProperty(language.toLowerCase(Locale.ENGLISH) + ".plugin." + languageVersion);
     Path plugin = pluginDir.resolve(fileProperty);
     URL url;
     try {

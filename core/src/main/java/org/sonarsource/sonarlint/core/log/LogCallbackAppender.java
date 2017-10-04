@@ -36,6 +36,22 @@ class LogCallbackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     this.defaultAppender = defaultAppender;
   }
 
+  private static LogOutput.Level translate(Level level) {
+    switch (level.toInt()) {
+      case Level.ERROR_INT:
+        return LogOutput.Level.ERROR;
+      case Level.WARN_INT:
+        return LogOutput.Level.WARN;
+      case Level.INFO_INT:
+        return LogOutput.Level.INFO;
+      case Level.TRACE_INT:
+        return LogOutput.Level.TRACE;
+      case Level.DEBUG_INT:
+      default:
+        return LogOutput.Level.DEBUG;
+    }
+  }
+
   public void setTarget(@Nullable LogOutput target) {
     this.tlTtarget.set(target);
   }
@@ -59,21 +75,5 @@ class LogCallbackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     }
 
     target.log(msg, translate(event.getLevel()));
-  }
-
-  private static LogOutput.Level translate(Level level) {
-    switch (level.toInt()) {
-      case Level.ERROR_INT:
-        return LogOutput.Level.ERROR;
-      case Level.WARN_INT:
-        return LogOutput.Level.WARN;
-      case Level.INFO_INT:
-        return LogOutput.Level.INFO;
-      case Level.TRACE_INT:
-        return LogOutput.Level.TRACE;
-      case Level.DEBUG_INT:
-      default:
-        return LogOutput.Level.DEBUG;
-    }
   }
 }

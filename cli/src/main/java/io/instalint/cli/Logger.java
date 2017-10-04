@@ -32,7 +32,7 @@ public class Logger {
     this.stdErr = System.err;
     this.stdOut = System.out;
   }
-  
+
   public Logger(PrintStream stdOut, PrintStream stdErr) {
     this.stdErr = stdErr;
     this.stdOut = stdOut;
@@ -50,16 +50,16 @@ public class Logger {
     get().stdErr = stdErr;
   }
 
-  public void setDebugEnabled(boolean debugEnabled) {
-    this.debugEnabled = debugEnabled;
-  }
-
   public void setDisplayStackTrace(boolean displayStackTrace) {
     this.displayStackTrace = displayStackTrace;
   }
 
   public boolean isDebugEnabled() {
     return debugEnabled;
+  }
+
+  public void setDebugEnabled(boolean debugEnabled) {
+    this.debugEnabled = debugEnabled;
   }
 
   public void debug(String message) {

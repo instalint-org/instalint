@@ -40,8 +40,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintEngine {
 
   private final StandaloneGlobalConfiguration globalConfig;
-  private StandaloneGlobalContainer globalContainer;
   private final ReadWriteLock rwl = new ReentrantReadWriteLock();
+  private StandaloneGlobalContainer globalContainer;
   private LogOutput logOutput = null;
 
   public StandaloneSonarLintEngineImpl(StandaloneGlobalConfiguration globalConfig) {
@@ -65,12 +65,12 @@ public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintE
 
   @Override
   public void analyze(StandaloneAnalysisConfiguration configuration,
-                      IssueListener issueListener,
-                      HighlightingListener highlightingListener,
-                      SymbolRefsListener symbolRefsListener,
-                      AnalysisErrorsListener analysisErrorsListener,
-                      FileIndexerListener fileIndexerListener,
-                      @Nullable LogOutput logOutput) {
+    IssueListener issueListener,
+    HighlightingListener highlightingListener,
+    SymbolRefsListener symbolRefsListener,
+    AnalysisErrorsListener analysisErrorsListener,
+    FileIndexerListener fileIndexerListener,
+    @Nullable LogOutput logOutput) {
     checkNotNull(configuration);
     checkNotNull(issueListener);
     setLogging(logOutput);

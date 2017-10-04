@@ -26,13 +26,6 @@ import static org.sonarsource.sonarlint.core.util.StringUtils.isEmpty;
 
 public class StringUtilsTest {
 
-  private class MyClass {
-    @Override
-    public String toString() {
-      return null;
-    }
-  }
-
   @Test
   public void testDescribe() {
     Object withToString = new Object() {
@@ -62,5 +55,12 @@ public class StringUtilsTest {
   @Test
   public void test_whitespace_string_is_not_empty() {
     assertThat(isEmpty("  ")).isFalse();
+  }
+
+  private class MyClass {
+    @Override
+    public String toString() {
+      return null;
+    }
   }
 }

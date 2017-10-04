@@ -53,10 +53,25 @@ public class ResponseMessage {
     this.analyzerResult = analyzerResult;
   }
 
+  public static String escapeHTML(String s) {
+    StringBuilder out = new StringBuilder(Math.max(16, s.length()));
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&') {
+        out.append("&#");
+        out.append((int) c);
+        out.append(';');
+      } else {
+        out.append(c);
+      }
+    }
+    return out.toString();
+  }
+
   public void writeTo(HttpServletResponse resp) throws IOException {
     try (ServletOutputStream outputStream = resp.getOutputStream();
-         OutputStreamWriter writer = new OutputStreamWriter(outputStream, UTF_8);
-         JsonWriter json = JsonWriter.of(writer)) {
+      OutputStreamWriter writer = new OutputStreamWriter(outputStream, UTF_8);
+      JsonWriter json = JsonWriter.of(writer)) {
       json.beginObject();
       writeLines(json);
       writePagination(json);
@@ -97,21 +112,6 @@ public class ResponseMessage {
     json.endArray();
 
     json.prop("code", code);
-  }
-
-  public static String escapeHTML(String s) {
-    StringBuilder out = new StringBuilder(Math.max(16, s.length()));
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&') {
-        out.append("&#");
-        out.append((int) c);
-        out.append(';');
-      } else {
-        out.append(c);
-      }
-    }
-    return out.toString();
   }
 
   private void writePagination(JsonWriter json) {

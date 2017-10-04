@@ -18,8 +18,7 @@ public class PhpExecutionTest extends AnalyzerExecutionTest {
       .symbolRef(range(17, 2, 17, 4),
         ranges())
       .symbolRef(range(16, 9, 16, 10),
-        ranges())
-      ;
+        ranges());
 
     result = analyzerHelper();
   }

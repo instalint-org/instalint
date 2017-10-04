@@ -41,38 +41,10 @@ import org.sonarsource.sonarlint.core.plugin.PluginInfo;
 
 public class ComponentContainer implements ContainerPopulator.Container {
 
-  private static final class ExtendedDefaultPicoContainer extends DefaultPicoContainer {
-    private ExtendedDefaultPicoContainer(ComponentFactory componentFactory, LifecycleStrategy lifecycleStrategy, PicoContainer parent) {
-      super(componentFactory, lifecycleStrategy, parent);
-    }
-
-    private ExtendedDefaultPicoContainer(final ComponentFactory componentFactory, final LifecycleStrategy lifecycleStrategy, final PicoContainer parent,
-      final ComponentMonitor componentMonitor) {
-      super(componentFactory, lifecycleStrategy, parent, componentMonitor);
-    }
-
-    @Override
-    public Object getComponent(final Object componentKeyOrType, final Class<? extends Annotation> annotation) {
-      try {
-        return super.getComponent(componentKeyOrType, annotation);
-      } catch (Throwable t) {
-        throw new IllegalStateException("Unable to load component " + componentKeyOrType, t);
-      }
-    }
-
-    @Override
-    public MutablePicoContainer makeChildContainer() {
-      DefaultPicoContainer pc = new ExtendedDefaultPicoContainer(componentFactory, lifecycleStrategy, this, componentMonitor);
-      addChildContainer(pc);
-      return pc;
-    }
-  }
-
   ComponentContainer parent;
   MutablePicoContainer pico;
   PropertyDefinitions propertyDefinitions;
   ComponentKeys componentKeys;
-
   /**
    * Create root container
    */
@@ -98,6 +70,26 @@ public class ComponentContainer implements ContainerPopulator.Container {
     this.propertyDefinitions = parent.propertyDefinitions;
     this.componentKeys = new ComponentKeys();
     addSingleton(this);
+  }
+
+  private static String getName(Object extension) {
+    if (extension instanceof Class) {
+      return ((Class<?>) extension).getName();
+    }
+    return getName(extension.getClass());
+  }
+
+  public static MutablePicoContainer createPicoContainer() {
+    ReflectionLifecycleStrategy lifecycleStrategy = new ReflectionLifecycleStrategy(new NullComponentMonitor(), "start", "stop", "close") {
+      @Override
+      public void start(Object component) {
+        Profiler profiler = Profiler.createIfTrace(Loggers.get(ComponentContainer.class));
+        profiler.start();
+        super.start(component);
+        profiler.stopTrace(component.getClass().getCanonicalName() + " started");
+      }
+    };
+    return new ExtendedDefaultPicoContainer(new OptInCaching(), lifecycleStrategy, null);
   }
 
   private synchronized MutablePicoContainer makeChildContainer() {
@@ -223,13 +215,6 @@ public class ComponentContainer implements ContainerPopulator.Container {
     return this;
   }
 
-  private static String getName(Object extension) {
-    if (extension instanceof Class) {
-      return ((Class<?>) extension).getName();
-    }
-    return getName(extension.getClass());
-  }
-
   public void declareExtension(@Nullable PluginInfo pluginInfo, Object extension) {
     propertyDefinitions.addComponent(extension, pluginInfo != null ? pluginInfo.getName() : "");
   }
@@ -256,21 +241,35 @@ public class ComponentContainer implements ContainerPopulator.Container {
     return new ComponentContainer(this);
   }
 
-  public static MutablePicoContainer createPicoContainer() {
-    ReflectionLifecycleStrategy lifecycleStrategy = new ReflectionLifecycleStrategy(new NullComponentMonitor(), "start", "stop", "close") {
-      @Override
-      public void start(Object component) {
-        Profiler profiler = Profiler.createIfTrace(Loggers.get(ComponentContainer.class));
-        profiler.start();
-        super.start(component);
-        profiler.stopTrace(component.getClass().getCanonicalName() + " started");
-      }
-    };
-    return new ExtendedDefaultPicoContainer(new OptInCaching(), lifecycleStrategy, null);
-  }
-
   public ComponentContainer getParent() {
     return parent;
+  }
+
+  private static final class ExtendedDefaultPicoContainer extends DefaultPicoContainer {
+    private ExtendedDefaultPicoContainer(ComponentFactory componentFactory, LifecycleStrategy lifecycleStrategy, PicoContainer parent) {
+      super(componentFactory, lifecycleStrategy, parent);
+    }
+
+    private ExtendedDefaultPicoContainer(final ComponentFactory componentFactory, final LifecycleStrategy lifecycleStrategy, final PicoContainer parent,
+      final ComponentMonitor componentMonitor) {
+      super(componentFactory, lifecycleStrategy, parent, componentMonitor);
+    }
+
+    @Override
+    public Object getComponent(final Object componentKeyOrType, final Class<? extends Annotation> annotation) {
+      try {
+        return super.getComponent(componentKeyOrType, annotation);
+      } catch (Throwable t) {
+        throw new IllegalStateException("Unable to load component " + componentKeyOrType, t);
+      }
+    }
+
+    @Override
+    public MutablePicoContainer makeChildContainer() {
+      DefaultPicoContainer pc = new ExtendedDefaultPicoContainer(componentFactory, lifecycleStrategy, this, componentMonitor);
+      addChildContainer(pc);
+      return pc;
+    }
   }
 
 }

@@ -91,8 +91,7 @@ public class AnalysisContainer extends ComponentContainer {
       CheckFactory.class,
 
       // issues
-      org.sonar.api.issue.NoSonarFilter.class
-    );
+      org.sonar.api.issue.NoSonarFilter.class);
   }
 
   private void addPluginExtensions() {

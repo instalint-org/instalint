@@ -19,4 +19,3 @@
  */
 @javax.annotation.ParametersAreNonnullByDefault
 package org.sonarsource.sonarlint.core.util;
-

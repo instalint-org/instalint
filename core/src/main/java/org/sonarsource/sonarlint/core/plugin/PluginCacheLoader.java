@@ -45,6 +45,10 @@ public class PluginCacheLoader {
     this.pluginIndex = pluginIndex;
   }
 
+  public static boolean isWhitelisted(String pluginKey) {
+    return PLUGIN_WHITELIST.contains(pluginKey);
+  }
+
   public Map<String, PluginInfo> load() {
     return loadPlugins(pluginIndex.references());
   }
@@ -68,10 +72,6 @@ public class PluginCacheLoader {
     profiler.stopDebug();
     return infosByKey;
 
-  }
-
-  public static boolean isWhitelisted(String pluginKey) {
-    return PLUGIN_WHITELIST.contains(pluginKey);
   }
 
   private Path getFromCache(final PluginReference pluginReference) {

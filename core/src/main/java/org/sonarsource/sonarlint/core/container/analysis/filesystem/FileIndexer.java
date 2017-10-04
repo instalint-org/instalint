@@ -43,7 +43,7 @@ public class FileIndexer {
   private final Set<SonarLintInputFile> indexed = new HashSet<SonarLintInputFile>();
 
   public FileIndexer(InputFileBuilder inputFileBuilder, StandaloneAnalysisConfiguration analysisConfiguration,
-                     FileIndexerListener fileIndexerListener) {
+    FileIndexerListener fileIndexerListener) {
     this.inputFileBuilder = inputFileBuilder;
     this.analysisConfiguration = analysisConfiguration;
     this.fileIndexerListener = fileIndexerListener;

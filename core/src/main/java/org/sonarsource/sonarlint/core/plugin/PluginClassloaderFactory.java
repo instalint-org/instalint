@@ -49,29 +49,6 @@ public class PluginClassloaderFactory {
   private static final String API_CLASSLOADER_KEY = "_api_";
 
   /**
-   * Creates as many classloaders as requested by the input parameter.
-   */
-  public Map<PluginClassLoaderDef, ClassLoader> create(Collection<PluginClassLoaderDef> defs) {
-    ClassLoader baseClassLoader = baseClassLoader();
-
-    ClassloaderBuilder builder = new ClassloaderBuilder();
-    builder.newClassloader(API_CLASSLOADER_KEY, baseClassLoader);
-    builder.setMask(API_CLASSLOADER_KEY, apiMask());
-
-    for (PluginClassLoaderDef def : defs) {
-      builder.newClassloader(def.getBasePluginKey());
-      builder.setParent(def.getBasePluginKey(), API_CLASSLOADER_KEY, new Mask());
-      builder.setLoadingOrder(def.getBasePluginKey(), def.isSelfFirstStrategy() ? SELF_FIRST : PARENT_FIRST);
-      for (File jar : def.getFiles()) {
-        builder.addURL(def.getBasePluginKey(), fileToUrl(jar));
-      }
-      exportResources(def, builder, defs);
-    }
-
-    return build(defs, builder);
-  }
-
-  /**
    * A plugin can export some resources to other plugins
    */
   private static void exportResources(PluginClassLoaderDef def, ClassloaderBuilder builder, Collection<PluginClassLoaderDef> allPlugins) {
@@ -98,10 +75,6 @@ public class PluginClassloaderFactory {
       result.put(def, classloader);
     }
     return result;
-  }
-
-  ClassLoader baseClassLoader() {
-    return getClass().getClassLoader();
   }
 
   private static URL fileToUrl(File file) {
@@ -142,5 +115,32 @@ public class PluginClassloaderFactory {
 
       // API exclusions
       .addExclusion("org/sonar/api/internal/");
+  }
+
+  /**
+   * Creates as many classloaders as requested by the input parameter.
+   */
+  public Map<PluginClassLoaderDef, ClassLoader> create(Collection<PluginClassLoaderDef> defs) {
+    ClassLoader baseClassLoader = baseClassLoader();
+
+    ClassloaderBuilder builder = new ClassloaderBuilder();
+    builder.newClassloader(API_CLASSLOADER_KEY, baseClassLoader);
+    builder.setMask(API_CLASSLOADER_KEY, apiMask());
+
+    for (PluginClassLoaderDef def : defs) {
+      builder.newClassloader(def.getBasePluginKey());
+      builder.setParent(def.getBasePluginKey(), API_CLASSLOADER_KEY, new Mask());
+      builder.setLoadingOrder(def.getBasePluginKey(), def.isSelfFirstStrategy() ? SELF_FIRST : PARENT_FIRST);
+      for (File jar : def.getFiles()) {
+        builder.addURL(def.getBasePluginKey(), fileToUrl(jar));
+      }
+      exportResources(def, builder, defs);
+    }
+
+    return build(defs, builder);
+  }
+
+  ClassLoader baseClassLoader() {
+    return getClass().getClassLoader();
   }
 }

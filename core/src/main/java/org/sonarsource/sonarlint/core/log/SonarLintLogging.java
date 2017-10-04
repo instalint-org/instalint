@@ -46,10 +46,10 @@ public class SonarLintLogging {
   public static void set(LogOutput output) {
     appender.setTarget(output);
   }
-  
+
   private static void init() {
     ConsoleAppender<ILoggingEvent> defaultAppender = new ConsoleAppender<>();
-    defaultAppender.setContext( (LoggerContext) LoggerFactory.getILoggerFactory());
+    defaultAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
     defaultAppender.setName(DEFAULT_APPENDER_NAME);
     LevelFilter levelFilter = new LevelFilter();
     levelFilter.setLevel(Level.ERROR);

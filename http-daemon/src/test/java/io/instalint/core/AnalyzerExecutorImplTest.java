@@ -10,17 +10,13 @@ import static org.junit.Assert.fail;
 
 public class AnalyzerExecutorImplTest {
 
-  static AnalyzerExecutor executor = new AnalyzerExecutorImpl();
-
-  static LanguagePlugin languagePlugin = newLanguagePlugin();
-
-  private static final String validExampleCode =
-    "    var arr = [1, 2, 3];\n" +
+  private static final String validExampleCode = "    var arr = [1, 2, 3];\n" +
     "    for (i in arr) {\n" +
     "        console.log(i);\n" +
     "    }";
-
   private static final String invalidExampleCode = "function hello(";
+  static AnalyzerExecutor executor = new AnalyzerExecutorImpl();
+  static LanguagePlugin languagePlugin = newLanguagePlugin();
 
   private static LanguagePlugin newLanguagePlugin() {
     try {

@@ -19,7 +19,6 @@
  */
 package org.sonarlint.daemon;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,23 +36,26 @@ public class CodePiece {
     return type;
   }
 
+  public String getText() {
+    return text;
+  }
+
   public CodePiece setText(String text) {
     this.text = text;
     return this;
   }
 
-  public String getText() {
-    return text;
-  }
-
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     CodePiece codePiece = (CodePiece) o;
 
-    if (type != codePiece.type) return false;
+    if (type != codePiece.type)
+      return false;
     return text != null ? text.equals(codePiece.text) : codePiece.text == null;
   }
 
@@ -67,9 +69,9 @@ public class CodePiece {
   @Override
   public String toString() {
     return "CodePiece{" +
-            type +
-            (text == null ? "" : ", text='" + text + '\'') +
-            '}';
+      type +
+      (text == null ? "" : ", text='" + text + '\'') +
+      '}';
   }
 
   public List<CodePiece> splitAt(int i) {
@@ -77,8 +79,7 @@ public class CodePiece {
       return Collections.singletonList(this);
     }
     return asList(
-            new CodePiece(PieceType.TEXT).setText(text.substring(0,i)),
-            new CodePiece(PieceType.TEXT).setText(text.substring(i))
-    );
+      new CodePiece(PieceType.TEXT).setText(text.substring(0, i)),
+      new CodePiece(PieceType.TEXT).setText(text.substring(i)));
   }
 }

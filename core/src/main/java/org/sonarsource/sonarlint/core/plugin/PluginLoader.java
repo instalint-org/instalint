@@ -57,6 +57,21 @@ public class PluginLoader {
     this.classloaderFactory = classloaderFactory;
   }
 
+  /**
+   * Get the root key of a tree of plugins. For example if plugin C depends on B, which depends on A, then
+   * B and C must be attached to the classloader of A. The method returns A in the three cases.
+   */
+  static String basePluginKey(PluginInfo plugin, Map<String, PluginInfo> allPluginsPerKey) {
+    String base = plugin.getKey();
+    String parentKey = plugin.getBasePlugin();
+    while (!Strings.isNullOrEmpty(parentKey)) {
+      PluginInfo parentPlugin = allPluginsPerKey.get(parentKey);
+      base = parentPlugin.getKey();
+      parentKey = parentPlugin.getBasePlugin();
+    }
+    return base;
+  }
+
   public Map<String, Plugin> load(Map<String, PluginInfo> infoByKeys) {
     Collection<PluginClassLoaderDef> defs = defineClassloaders(infoByKeys);
     Map<PluginClassLoaderDef, ClassLoader> classloaders = classloaderFactory.create(defs);
@@ -139,20 +154,5 @@ public class PluginLoader {
         }
       }
     }
-  }
-
-  /**
-   * Get the root key of a tree of plugins. For example if plugin C depends on B, which depends on A, then
-   * B and C must be attached to the classloader of A. The method returns A in the three cases.
-   */
-  static String basePluginKey(PluginInfo plugin, Map<String, PluginInfo> allPluginsPerKey) {
-    String base = plugin.getKey();
-    String parentKey = plugin.getBasePlugin();
-    while (!Strings.isNullOrEmpty(parentKey)) {
-      PluginInfo parentPlugin = allPluginsPerKey.get(parentKey);
-      base = parentPlugin.getKey();
-      parentKey = parentPlugin.getBasePlugin();
-    }
-    return base;
   }
 }

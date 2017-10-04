@@ -46,7 +46,7 @@ public class Underliner {
       }
       int startLineOffset = issue.getStartLineOffset();
       int carretPosition = 1;
-      for (; carretPosition < startLineOffset; ) {
+      for (; carretPosition < startLineOffset;) {
         while (pieces.get(pieceIndex).getType() != PieceType.TEXT) {
           pieceIndex++;
         }
@@ -62,12 +62,12 @@ public class Underliner {
       pieceIndex++;
 
       int endLineOffset = issue.getEndLineOffset();
-      for (; carretPosition <= endLineOffset; ) {
+      for (; carretPosition <= endLineOffset;) {
         while (pieces.get(pieceIndex).getType() != PieceType.TEXT) {
           pieceIndex++;
         }
         if (endLineOffset <= carretPosition + pieces.get(pieceIndex).getText().length()) {
-          pieces.addAll(pieceIndex, pieces.remove(pieceIndex).splitAt(endLineOffset+1 - carretPosition));
+          pieces.addAll(pieceIndex, pieces.remove(pieceIndex).splitAt(endLineOffset + 1 - carretPosition));
         } else {
           pieceIndex++;
           break;

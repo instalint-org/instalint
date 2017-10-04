@@ -104,11 +104,11 @@ public class StandaloneGlobalContainer extends ComponentContainer {
   }
 
   public void analyze(StandaloneAnalysisConfiguration configuration,
-                      IssueListener issueListener,
-                      HighlightingListener highlightingListener,
-                      SymbolRefsListener symbolRefsListener,
-                      AnalysisErrorsListener analysisErrorsListener,
-                      FileIndexerListener fileIndexerListener) {
+    IssueListener issueListener,
+    HighlightingListener highlightingListener,
+    SymbolRefsListener symbolRefsListener,
+    AnalysisErrorsListener analysisErrorsListener,
+    FileIndexerListener fileIndexerListener) {
     AnalysisContainer analysisContainer = new AnalysisContainer(this);
     analysisContainer.add(configuration);
     analysisContainer.add(issueListener);

@@ -28,7 +28,7 @@ public class StandalonePluginUrls {
   public StandalonePluginUrls(List<URL> pluginUrls) {
     this.pluginUrls = pluginUrls;
   }
-  
+
   public List<URL> urls() {
     return pluginUrls;
   }

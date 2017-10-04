@@ -25,14 +25,14 @@ import javax.annotation.CheckForNull;
 public interface Issue extends IssueLocation {
 
   String getSeverity();
-  
+
   @CheckForNull
   String getType();
 
   String getRuleKey();
 
   String getRuleName();
-  
+
   List<Flow> flows();
 
   /**
@@ -40,7 +40,7 @@ public interface Issue extends IssueLocation {
    */
   @CheckForNull
   ClientInputFile getInputFile();
-  
+
   interface Flow {
     List<IssueLocation> locations();
   }

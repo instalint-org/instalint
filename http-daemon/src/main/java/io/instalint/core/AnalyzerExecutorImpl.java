@@ -34,6 +34,14 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConf
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 
 public class AnalyzerExecutorImpl implements AnalyzerExecutor {
+  private static Path newDir(Path path) throws IOException {
+    return Files.createDirectories(path);
+  }
+
+  private static Path newTempDir() throws IOException {
+    return Files.createTempDirectory("sonarlint-");
+  }
+
   @Override
   public AnalyzerResult execute(LanguagePlugin languagePlugin, String code) {
     StandaloneGlobalConfiguration globalConfig = StandaloneGlobalConfiguration.builder()
@@ -94,21 +102,21 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     List<Issue> issues = new ArrayList<>();
     IssueListener issueListener = issues::add;
 
-    LogOutput logOutput = (formattedMessage, level) -> { };
+    LogOutput logOutput = (formattedMessage, level) -> {
+    };
 
     List<Highlighting> highlightings = new ArrayList<>();
-    HighlightingListener highlightingListener =
-      highlighting -> highlighting.forEach(hl -> highlightings.add(new Highlighting() {
-        @Override
-        public TypeOfText type() {
-          return hl.getTextType();
-        }
+    HighlightingListener highlightingListener = highlighting -> highlighting.forEach(hl -> highlightings.add(new Highlighting() {
+      @Override
+      public TypeOfText type() {
+        return hl.getTextType();
+      }
 
-        @Override
-        public TextRange textRange() {
-          return hl.range();
-        }
-      }));
+      @Override
+      public TextRange textRange() {
+        return hl.range();
+      }
+    }));
 
     Map<TextRange, Set<TextRange>> symbolRefs = new HashMap<>();
     SymbolRefsListener symbolRefsListener = symbolRefs::putAll;
@@ -165,13 +173,5 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
         return errors.isEmpty();
       }
     };
-  }
-
-  private static Path newDir(Path path) throws IOException {
-    return Files.createDirectories(path);
-  }
-
-  private static Path newTempDir() throws IOException {
-    return Files.createTempDirectory("sonarlint-");
   }
 }

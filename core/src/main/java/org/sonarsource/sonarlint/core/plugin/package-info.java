@@ -24,4 +24,3 @@
 package org.sonarsource.sonarlint.core.plugin;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-

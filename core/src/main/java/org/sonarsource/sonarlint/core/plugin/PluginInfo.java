@@ -40,59 +40,8 @@ import org.sonar.api.utils.log.Loggers;
 public class PluginInfo implements Comparable<PluginInfo> {
 
   private static final Joiner SLASH_JOINER = Joiner.on(" / ").skipNulls();
-
-  public static class RequiredPlugin {
-
-    private static final Pattern PARSER = Pattern.compile("\\w+:.+");
-
-    private final String key;
-    private final Version minimalVersion;
-
-    public RequiredPlugin(String key, Version minimalVersion) {
-      this.key = key;
-      this.minimalVersion = minimalVersion;
-    }
-
-    public String getKey() {
-      return key;
-    }
-
-    public Version getMinimalVersion() {
-      return minimalVersion;
-    }
-
-    public static RequiredPlugin parse(String s) {
-      if (!PARSER.matcher(s).matches()) {
-        throw new IllegalArgumentException("Manifest field does not have correct format: " + s);
-      }
-      String[] fields = StringUtils.split(s, ':');
-      return new RequiredPlugin(fields[0], Version.create(fields[1]).removeQualifier());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      RequiredPlugin that = (RequiredPlugin) o;
-      return key.equals(that.key);
-    }
-
-    @Override
-    public int hashCode() {
-      return key.hashCode();
-    }
-
-    @Override
-    public String toString() {
-      return new StringBuilder().append(key).append(':').append(minimalVersion.getName()).toString();
-    }
-  }
-
   private final String key;
+  private final Set<RequiredPlugin> requiredPlugins = new HashSet<>();
   private String name;
 
   @CheckForNull
@@ -117,22 +66,56 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
   private Boolean sonarLintSupported;
 
-  private final Set<RequiredPlugin> requiredPlugins = new HashSet<>();
-
   public PluginInfo(String key) {
     Preconditions.checkNotNull(key, "Plugin key is missing from manifest");
     this.key = key;
     this.name = key;
   }
 
-  public PluginInfo setJarFile(@Nullable File f) {
-    this.jarFile = f;
-    return this;
+  public static PluginInfo create(Path jarFile) {
+    try {
+      PluginManifest manifest = new PluginManifest(jarFile);
+      return create(jarFile, manifest);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("Fail to extract plugin metadata from file: " + jarFile, e);
+    }
+  }
+
+  @VisibleForTesting
+  static PluginInfo create(Path jarPath, PluginManifest manifest) {
+    if (StringUtils.isBlank(manifest.getKey())) {
+      throw MessageException.of(String.format("File is not a plugin. Please delete it and restart: %s", jarPath.toAbsolutePath()));
+    }
+    PluginInfo info = new PluginInfo(manifest.getKey());
+
+    info.setJarFile(jarPath.toFile());
+    info.setName(manifest.getName());
+    info.setMainClass(manifest.getMainClass());
+    info.setVersion(Version.create(manifest.getVersion()));
+
+    // optional fields
+    info.setUseChildFirstClassLoader(manifest.isUseChildFirstClassLoader());
+    info.setBasePlugin(manifest.getBasePlugin());
+    info.setImplementationBuild(manifest.getImplementationBuild());
+    info.setSonarLintSupported(manifest.isSonarLintSupported());
+    String[] requiredPlugins = manifest.getRequirePlugins();
+    if (requiredPlugins != null) {
+      for (String s : requiredPlugins) {
+        info.addRequiredPlugin(RequiredPlugin.parse(s));
+      }
+    }
+    return info;
   }
 
   @CheckForNull
   public File getJarFile() {
     return jarFile;
+  }
+
+  public PluginInfo setJarFile(@Nullable File f) {
+    this.jarFile = f;
+    return this;
   }
 
   public File getNonNullJarFile() {
@@ -148,47 +131,14 @@ public class PluginInfo implements Comparable<PluginInfo> {
     return name;
   }
 
-  @CheckForNull
-  public Version getVersion() {
-    return version;
-  }
-
-  @CheckForNull
-  public Version getMinimalSqVersion() {
-    return minimalSqVersion;
-  }
-
-  @CheckForNull
-  public String getMainClass() {
-    return mainClass;
-  }
-
-  public boolean isUseChildFirstClassLoader() {
-    return useChildFirstClassLoader;
-  }
-
-  @CheckForNull
-  public String getBasePlugin() {
-    return basePlugin;
-  }
-
-  @CheckForNull
-  public String getImplementationBuild() {
-    return implementationBuild;
-  }
-
-  @CheckForNull
-  public Boolean isSonarLintSupported() {
-    return sonarLintSupported;
-  }
-
-  public Set<RequiredPlugin> getRequiredPlugins() {
-    return requiredPlugins;
-  }
-
   public PluginInfo setName(@Nullable String name) {
     this.name = MoreObjects.firstNonNull(name, this.key);
     return this;
+  }
+
+  @CheckForNull
+  public Version getVersion() {
+    return version;
   }
 
   public PluginInfo setVersion(Version version) {
@@ -196,9 +146,19 @@ public class PluginInfo implements Comparable<PluginInfo> {
     return this;
   }
 
+  @CheckForNull
+  public Version getMinimalSqVersion() {
+    return minimalSqVersion;
+  }
+
   public PluginInfo setMinimalSqVersion(@Nullable Version v) {
     this.minimalSqVersion = v;
     return this;
+  }
+
+  @CheckForNull
+  public String getMainClass() {
+    return mainClass;
   }
 
   /**
@@ -209,9 +169,18 @@ public class PluginInfo implements Comparable<PluginInfo> {
     return this;
   }
 
+  public boolean isUseChildFirstClassLoader() {
+    return useChildFirstClassLoader;
+  }
+
   public PluginInfo setUseChildFirstClassLoader(boolean b) {
     this.useChildFirstClassLoader = b;
     return this;
+  }
+
+  @CheckForNull
+  public String getBasePlugin() {
+    return basePlugin;
   }
 
   public PluginInfo setBasePlugin(@Nullable String s) {
@@ -225,9 +194,23 @@ public class PluginInfo implements Comparable<PluginInfo> {
     return this;
   }
 
+  @CheckForNull
+  public String getImplementationBuild() {
+    return implementationBuild;
+  }
+
   public PluginInfo setImplementationBuild(@Nullable String implementationBuild) {
     this.implementationBuild = implementationBuild;
     return this;
+  }
+
+  @CheckForNull
+  public Boolean isSonarLintSupported() {
+    return sonarLintSupported;
+  }
+
+  public Set<RequiredPlugin> getRequiredPlugins() {
+    return requiredPlugins;
   }
 
   public PluginInfo setSonarLintSupported(Boolean sonarLintSupported) {
@@ -292,40 +275,55 @@ public class PluginInfo implements Comparable<PluginInfo> {
       .result();
   }
 
-  public static PluginInfo create(Path jarFile) {
-    try {
-      PluginManifest manifest = new PluginManifest(jarFile);
-      return create(jarFile, manifest);
+  public static class RequiredPlugin {
 
-    } catch (IOException e) {
-      throw new IllegalStateException("Fail to extract plugin metadata from file: " + jarFile, e);
+    private static final Pattern PARSER = Pattern.compile("\\w+:.+");
+
+    private final String key;
+    private final Version minimalVersion;
+
+    public RequiredPlugin(String key, Version minimalVersion) {
+      this.key = key;
+      this.minimalVersion = minimalVersion;
     }
-  }
 
-  @VisibleForTesting
-  static PluginInfo create(Path jarPath, PluginManifest manifest) {
-    if (StringUtils.isBlank(manifest.getKey())) {
-      throw MessageException.of(String.format("File is not a plugin. Please delete it and restart: %s", jarPath.toAbsolutePath()));
-    }
-    PluginInfo info = new PluginInfo(manifest.getKey());
-
-    info.setJarFile(jarPath.toFile());
-    info.setName(manifest.getName());
-    info.setMainClass(manifest.getMainClass());
-    info.setVersion(Version.create(manifest.getVersion()));
-
-    // optional fields
-    info.setUseChildFirstClassLoader(manifest.isUseChildFirstClassLoader());
-    info.setBasePlugin(manifest.getBasePlugin());
-    info.setImplementationBuild(manifest.getImplementationBuild());
-    info.setSonarLintSupported(manifest.isSonarLintSupported());
-    String[] requiredPlugins = manifest.getRequirePlugins();
-    if (requiredPlugins != null) {
-      for (String s : requiredPlugins) {
-        info.addRequiredPlugin(RequiredPlugin.parse(s));
+    public static RequiredPlugin parse(String s) {
+      if (!PARSER.matcher(s).matches()) {
+        throw new IllegalArgumentException("Manifest field does not have correct format: " + s);
       }
+      String[] fields = StringUtils.split(s, ':');
+      return new RequiredPlugin(fields[0], Version.create(fields[1]).removeQualifier());
     }
-    return info;
+
+    public String getKey() {
+      return key;
+    }
+
+    public Version getMinimalVersion() {
+      return minimalVersion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      RequiredPlugin that = (RequiredPlugin) o;
+      return key.equals(that.key);
+    }
+
+    @Override
+    public int hashCode() {
+      return key.hashCode();
+    }
+
+    @Override
+    public String toString() {
+      return new StringBuilder().append(key).append(':').append(minimalVersion.getName()).toString();
+    }
   }
 
 }

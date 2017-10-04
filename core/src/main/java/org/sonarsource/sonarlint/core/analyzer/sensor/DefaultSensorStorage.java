@@ -53,10 +53,10 @@ public class DefaultSensorStorage implements SensorStorage {
   private final AnalysisErrorsListener analysisErrorsListener;
 
   public DefaultSensorStorage(ActiveRules activeRules, Rules rules,
-                              IssueListener issueListener,
-                              HighlightingListener highlightingListener,
-                              SymbolRefsListener symbolRefsListener,
-                              AnalysisErrorsListener analysisErrorsListener) {
+    IssueListener issueListener,
+    HighlightingListener highlightingListener,
+    SymbolRefsListener symbolRefsListener,
+    AnalysisErrorsListener analysisErrorsListener) {
     this.activeRules = activeRules;
     this.rules = rules;
     this.issueListener = issueListener;

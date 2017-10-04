@@ -61,6 +61,10 @@ public class Version implements Comparable<Version> {
     return StringUtils.leftPad(part, 4, '0');
   }
 
+  public static Version create(String version) {
+    return new Version(version);
+  }
+
   public String getMajor() {
     return major;
   }
@@ -143,10 +147,6 @@ public class Version implements Comparable<Version> {
   @Override
   public String toString() {
     return name;
-  }
-
-  public static Version create(String version) {
-    return new Version(version);
   }
 
   public Version removeQualifier() {
