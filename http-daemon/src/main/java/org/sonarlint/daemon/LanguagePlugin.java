@@ -24,10 +24,12 @@ import java.net.URL;
 public class LanguagePlugin {
   private final URL url;
   private final String languageVersion;
+  private final String inputFileExtension;
 
-  public LanguagePlugin(URL url, String languageVersion) {
+  public LanguagePlugin(URL url, String languageVersion, String inputFileExtension) {
     this.url = url;
     this.languageVersion = languageVersion;
+    this.inputFileExtension = inputFileExtension;
   }
 
   public URL getUrl() {
@@ -36,6 +38,10 @@ public class LanguagePlugin {
 
   public String getLanguageVersion() {
     return languageVersion;
+  }
+
+  public String getInputFileExtension() {
+    return inputFileExtension;
   }
 
   @Override

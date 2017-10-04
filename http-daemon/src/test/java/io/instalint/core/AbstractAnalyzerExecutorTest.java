@@ -16,7 +16,7 @@ public abstract class AbstractAnalyzerExecutorTest {
 
   private LanguagePlugin newLanguagePlugin() {
     try {
-      return new LanguagePlugin(new File("../core/target/plugins", filename()).toURI().toURL(), null);
+      return new LanguagePlugin(new File("../core/target/plugins", filename()).toURI().toURL(), null, inputFileExtension());
     } catch (MalformedURLException e) {
       e.printStackTrace();
       fail();
@@ -26,6 +26,8 @@ public abstract class AbstractAnalyzerExecutorTest {
   }
 
   abstract String filename();
+
+  abstract String inputFileExtension();
 
   abstract String validExampleCode();
 

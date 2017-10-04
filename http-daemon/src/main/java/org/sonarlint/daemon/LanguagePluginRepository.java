@@ -22,13 +22,21 @@ package org.sonarlint.daemon;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 public class LanguagePluginRepository {
 
   private Path pluginDir;
+
+  private static Map<String, String> languageCodeToFileExtension = new HashMap<>();
+  static {
+    languageCodeToFileExtension.put("javascript", "js");
+    languageCodeToFileExtension.put("php", "php");
+  }
 
   public void init(Path workDir) {
     if (pluginDir == null) {
@@ -38,10 +46,11 @@ public class LanguagePluginRepository {
   }
 
   public LanguagePlugin retrieve(String language, String languageVersion, Properties properties) {
+    String languageCode = language.toLowerCase(Locale.ENGLISH);
     if ("latest".equals(languageVersion)) {
-      languageVersion = properties.getProperty(language.toLowerCase(Locale.ENGLISH) + ".latestVersion");
+      languageVersion = properties.getProperty(languageCode + ".latestVersion");
     }
-    String fileProperty = properties.getProperty(language.toLowerCase(Locale.ENGLISH) + ".plugin." + languageVersion);
+    String fileProperty = properties.getProperty(languageCode + ".plugin." + languageVersion);
     Path plugin = pluginDir.resolve(fileProperty);
     URL url;
     try {
@@ -49,6 +58,6 @@ public class LanguagePluginRepository {
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Cannot locate language plugin", e);
     }
-    return new LanguagePlugin(url, languageVersion);
+    return new LanguagePlugin(url, languageVersion, languageCodeToFileExtension.getOrDefault(languageCode, languageCode));
   }
 }
