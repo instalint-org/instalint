@@ -40,22 +40,22 @@ public abstract class AbstractAnalyzerExecutorTest {
   @Test
   public void should_report_issues() {
     AnalyzerResult result = execute(validExampleCode());
-    assertThat(result.issues()).hasSize(issueCount());
     assertThat(result.success()).isTrue();
+    assertThat(result.issues()).hasSize(issueCount());
   }
 
   @Test
   public void should_report_highlightings() {
     AnalyzerResult result = execute(validExampleCode());
-    assertThat(result.highlightings()).hasSize(highlightingCount());
     assertThat(result.success()).isTrue();
+    assertThat(result.highlightings()).hasSize(highlightingCount());
   }
 
   @Test
   public void should_report_symbol_refs() {
     AnalyzerResult result = execute(validExampleCode());
-    assertThat(result.symbolRefs()).hasSize(symbolRefCount());
     assertThat(result.success()).isTrue();
+    assertThat(result.symbolRefs()).hasSize(symbolRefCount());
   }
 
   @Test
