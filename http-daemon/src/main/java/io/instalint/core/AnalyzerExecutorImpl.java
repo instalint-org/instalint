@@ -1,6 +1,7 @@
 package io.instalint.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -14,12 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.api.batch.fs.TextRange;
+import org.sonar.api.batch.sensor.error.AnalysisError;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonarlint.daemon.LanguagePlugin;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorImpl;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
@@ -109,11 +113,30 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     Map<TextRange, Set<TextRange>> symbolRefs = new HashMap<>();
     SymbolRefsListener symbolRefsListener = symbolRefs::putAll;
 
-    AnalysisResults results = engine.analyze(
+    List<AnalysisError> errors = new ArrayList<>();
+    AnalysisErrorsListener analysisErrorsListener = (message, location) -> errors.add(new AnalysisErrorImpl(message, location));
+
+    FileIndexerListener fileIndexerListener = new FileIndexerListener() {
+      int count = 0;
+
+      @Override
+      public void indexed(File file) {
+        count++;
+      }
+
+      @Override
+      public int count() {
+        return count;
+      }
+    };
+
+    engine.analyze(
       config,
       issueListener,
       highlightingListener,
       symbolRefsListener,
+      analysisErrorsListener,
+      fileIndexerListener,
       logOutput);
 
     return new AnalyzerResult() {
@@ -133,8 +156,13 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       }
 
       @Override
+      public List<AnalysisError> errors() {
+        return errors;
+      }
+
+      @Override
       public boolean success() {
-        return results.failedAnalysisFiles().isEmpty();
+        return errors.isEmpty();
       }
     };
   }

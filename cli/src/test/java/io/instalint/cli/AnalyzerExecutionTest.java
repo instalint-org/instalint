@@ -21,8 +21,9 @@ import org.sonar.api.batch.fs.internal.DefaultTextRange;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -164,17 +165,35 @@ public abstract class AnalyzerExecutionTest {
     SymbolRefsListener symbolRefsListener =
       referencesBySymbol -> referencesBySymbol.forEach(expected::symbolRef);
 
-    AnalysisResults results = engine.analyze(
+    AtomicInteger failedFileCount = new AtomicInteger();
+    AnalysisErrorsListener analysisErrorsListener = (message, location) -> failedFileCount.incrementAndGet();
+
+    FileIndexerListener fileIndexerListener = new FileIndexerListener() {
+      int count = 0;
+      @Override
+      public void indexed(File file) {
+        count++;
+      }
+
+      @Override
+      public int count() {
+        return count;
+      }
+    };
+
+    engine.analyze(
       config,
       issueListener,
       highlightingListener,
       symbolRefsListener,
+      analysisErrorsListener,
+      fileIndexerListener,
       logOutput);
 
     return expected
       .issueCount(issueCount.get())
-      .failedFileCount(results.failedAnalysisFiles().size())
-      .fileCount(results.fileCount())
+      .failedFileCount(failedFileCount.get())
+      .fileCount(fileIndexerListener.count())
       ;
   }
 

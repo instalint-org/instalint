@@ -19,16 +19,14 @@
  */
 package org.sonarsource.sonarlint.core.container.analysis.filesystem;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
-import org.sonar.api.utils.MessageException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
-import org.sonarsource.sonarlint.core.container.model.DefaultAnalysisResult;
 
 /**
  * Index input files into {@link InputPathCache}.
@@ -40,59 +38,45 @@ public class FileIndexer {
 
   private final InputFileBuilder inputFileBuilder;
   private final StandaloneAnalysisConfiguration analysisConfiguration;
-  private final DefaultAnalysisResult analysisResult;
+  private final FileIndexerListener fileIndexerListener;
+
+  private final Set<SonarLintInputFile> indexed = new HashSet<SonarLintInputFile>();
 
   public FileIndexer(InputFileBuilder inputFileBuilder, StandaloneAnalysisConfiguration analysisConfiguration,
-    DefaultAnalysisResult analysisResult) {
+                     FileIndexerListener fileIndexerListener) {
     this.inputFileBuilder = inputFileBuilder;
     this.analysisConfiguration = analysisConfiguration;
-    this.analysisResult = analysisResult;
+    this.fileIndexerListener = fileIndexerListener;
   }
 
   void index(SonarLintFileSystem fileSystem) {
-    Progress progress = new Progress();
-
     try {
-      indexFiles(fileSystem, progress, analysisConfiguration.inputFiles());
+      indexFiles(fileSystem, analysisConfiguration.inputFiles());
     } catch (Exception e) {
       throw e;
     }
-    analysisResult.setFileCount(progress.count());
   }
 
-  private void indexFiles(SonarLintFileSystem fileSystem, Progress progress, Iterable<ClientInputFile> inputFiles) {
+  private void indexFiles(SonarLintFileSystem fileSystem, Iterable<ClientInputFile> inputFiles) {
     for (ClientInputFile file : inputFiles) {
-      indexFile(fileSystem, progress, file);
+      indexFile(fileSystem, file);
     }
   }
 
-  private void indexFile(SonarLintFileSystem fileSystem, Progress progress, ClientInputFile file) {
+  private void indexFile(SonarLintFileSystem fileSystem, ClientInputFile file) {
     SonarLintInputFile inputFile = inputFileBuilder.create(file);
-    indexFile(fileSystem, progress, inputFile);
+    indexFile(fileSystem, inputFile);
   }
 
-  private void indexFile(final SonarLintFileSystem fs, final Progress status, final SonarLintInputFile inputFile) {
+  private void indexFile(final SonarLintFileSystem fs, final SonarLintInputFile inputFile) {
+    if (!indexed.add(inputFile)) {
+      return;
+    }
     fs.add(inputFile);
-    if (status.count() == 0) {
+    if (indexed.size() == 1) {
       LOG.debug("Setting filesystem encoding: " + inputFile.charset());
       fs.setEncoding(inputFile.charset());
     }
-    status.markAsIndexed(inputFile);
+    fileIndexerListener.indexed(inputFile.file());
   }
-
-  private class Progress {
-    private final Set<Path> indexed = new HashSet<>();
-
-    synchronized void markAsIndexed(SonarLintInputFile inputFile) {
-      if (indexed.contains(inputFile.path())) {
-        throw MessageException.of("File " + inputFile + " can't be indexed twice.");
-      }
-      indexed.add(inputFile.path());
-    }
-
-    int count() {
-      return indexed.size();
-    }
-  }
-
 }

@@ -30,7 +30,8 @@ import org.sonar.api.utils.System2;
 import org.sonar.api.utils.UriReader;
 import org.sonar.api.utils.Version;
 import org.sonarsource.sonarlint.core.analyzer.sensor.NewSensorsExecutor;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
+import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -40,7 +41,6 @@ import org.sonarsource.sonarlint.core.container.ComponentContainer;
 import org.sonarsource.sonarlint.core.container.analysis.AnalysisContainer;
 import org.sonarsource.sonarlint.core.container.global.ExtensionInstaller;
 import org.sonarsource.sonarlint.core.container.global.GlobalTempFolderProvider;
-import org.sonarsource.sonarlint.core.container.model.DefaultAnalysisResult;
 import org.sonarsource.sonarlint.core.container.standalone.rule.StandaloneRuleRepositoryContainer;
 import org.sonarsource.sonarlint.core.plugin.DefaultPluginJarExploder;
 import org.sonarsource.sonarlint.core.plugin.PluginCacheLoader;
@@ -103,21 +103,22 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     activeRules = container.getActiveRules();
   }
 
-  public AnalysisResults analyze(StandaloneAnalysisConfiguration configuration,
-                                 IssueListener issueListener,
-                                 HighlightingListener highlightingListener,
-                                 SymbolRefsListener symbolRefsListener) {
+  public void analyze(StandaloneAnalysisConfiguration configuration,
+                      IssueListener issueListener,
+                      HighlightingListener highlightingListener,
+                      SymbolRefsListener symbolRefsListener,
+                      AnalysisErrorsListener analysisErrorsListener,
+                      FileIndexerListener fileIndexerListener) {
     AnalysisContainer analysisContainer = new AnalysisContainer(this);
     analysisContainer.add(configuration);
     analysisContainer.add(issueListener);
     analysisContainer.add(highlightingListener);
     analysisContainer.add(symbolRefsListener);
+    analysisContainer.add(analysisErrorsListener);
+    analysisContainer.add(fileIndexerListener);
     analysisContainer.add(rules);
     analysisContainer.add(activeRules);
     analysisContainer.add(NewSensorsExecutor.class);
-    DefaultAnalysisResult defaultAnalysisResult = new DefaultAnalysisResult();
-    analysisContainer.add(defaultAnalysisResult);
     analysisContainer.execute();
-    return defaultAnalysisResult;
   }
 }
