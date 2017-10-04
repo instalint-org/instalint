@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.utils.text.JsonWriter;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
@@ -63,6 +64,7 @@ public class ResponseMessage {
       writeStore(json);
       writeHighlightings(json);
       writeSymbolRefs(json);
+      writeErrors(json);
       writeSuccess(json);
       json.endObject();
     }
@@ -192,7 +194,7 @@ public class ResponseMessage {
 
         json.name("locations").beginArray();
         for (TextRange range : entry.getValue()) {
-            json.beginObject()
+          json.beginObject()
             .prop("startLine", range.start().line())
             .prop("endLine", range.end().line())
             .prop("startOffset", range.start().lineOffset())
@@ -206,6 +208,24 @@ public class ResponseMessage {
     json.endArray();
   }
 
+  private void writeErrors(JsonWriter json) {
+    json.name("errors");
+    json.beginArray();
+    analyzerResult.errors().forEach(error -> {
+      json.beginObject().prop("message", error.message());
+      TextPointer location = error.location();
+      if (location != null) {
+        json
+          .prop("line", location.line())
+          .prop("lineOffset", location.lineOffset());
+      }
+      json.endObject();
+    });
+    json.endArray();
+  }
+
+  // success == errors.isEmpty
+  @Deprecated
   private void writeSuccess(JsonWriter json) {
     json.prop("success", analyzerResult.success());
   }
