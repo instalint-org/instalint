@@ -8,19 +8,15 @@ import org.sonarlint.daemon.LanguagePlugin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class AnalyzerExecutorImplTest {
+public abstract class AbstractAnalyzerExecutorTest {
 
-  private static final String validExampleCode = "    var arr = [1, 2, 3];\n" +
-    "    for (i in arr) {\n" +
-    "        console.log(i);\n" +
-    "    }";
-  private static final String invalidExampleCode = "function hello(";
   static AnalyzerExecutor executor = new AnalyzerExecutorImpl();
-  static LanguagePlugin languagePlugin = newLanguagePlugin();
 
-  private static LanguagePlugin newLanguagePlugin() {
+  private LanguagePlugin languagePlugin = newLanguagePlugin();
+
+  private LanguagePlugin newLanguagePlugin() {
     try {
-      return new LanguagePlugin(new File("../core/target/plugins/sonar-javascript-plugin-3.1.1.5128.jar").toURI().toURL(), null);
+      return new LanguagePlugin(new File("../core/target/plugins", filename()).toURI().toURL(), null);
     } catch (MalformedURLException e) {
       e.printStackTrace();
       fail();
@@ -29,30 +25,42 @@ public class AnalyzerExecutorImplTest {
     return null;
   }
 
+  abstract String filename();
+
+  abstract String validExampleCode();
+
+  abstract String invalidExampleCode();
+
+  abstract int issueCount();
+
+  abstract int highlightingCount();
+
+  abstract int symbolRefCount();
+
   @Test
   public void should_report_issues() {
-    AnalyzerResult result = execute(validExampleCode);
-    assertThat(result.issues()).hasSize(1);
+    AnalyzerResult result = execute(validExampleCode());
+    assertThat(result.issues()).hasSize(issueCount());
     assertThat(result.success()).isTrue();
   }
 
   @Test
   public void should_report_highlightings() {
-    AnalyzerResult result = execute(validExampleCode);
-    assertThat(result.highlightings()).hasSize(6);
+    AnalyzerResult result = execute(validExampleCode());
+    assertThat(result.highlightings()).hasSize(highlightingCount());
     assertThat(result.success()).isTrue();
   }
 
   @Test
   public void should_report_symbol_refs() {
-    AnalyzerResult result = execute(validExampleCode);
-    assertThat(result.symbolRefs()).hasSize(4);
+    AnalyzerResult result = execute(validExampleCode());
+    assertThat(result.symbolRefs()).hasSize(symbolRefCount());
     assertThat(result.success()).isTrue();
   }
 
   @Test
   public void should_report_analysis_failed() {
-    AnalyzerResult result = execute(invalidExampleCode + validExampleCode);
+    AnalyzerResult result = execute(invalidExampleCode() + validExampleCode());
     assertThat(result.success()).isFalse();
     assertThat(result.issues()).isEmpty();
     assertThat(result.highlightings()).isEmpty();
