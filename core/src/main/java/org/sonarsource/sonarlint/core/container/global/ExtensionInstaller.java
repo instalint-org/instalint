@@ -44,29 +44,6 @@ public class ExtensionInstaller {
     this.pluginRepository = pluginRepository;
   }
 
-  public ExtensionInstaller install(ComponentContainer container) {
-
-    // plugin extensions
-    for (PluginInfo pluginInfo : pluginRepository.getPluginInfos()) {
-      Plugin plugin = pluginRepository.getPluginInstance(pluginInfo.getKey());
-      Plugin.Context context = new Plugin.Context(sqRuntime);
-      plugin.define(context);
-      loadExtensions(container, pluginInfo, context);
-    }
-    List<ExtensionProvider> providers = container.getComponentsByType(ExtensionProvider.class);
-    for (ExtensionProvider provider : providers) {
-      Object object = provider.provide();
-      if (object instanceof Iterable) {
-        for (Object extension : (Iterable) object) {
-          container.addExtension(null, extension);
-        }
-      } else {
-        container.addExtension(null, object);
-      }
-    }
-    return this;
-  }
-
   private static void loadExtensions(ComponentContainer container, PluginInfo pluginInfo, Plugin.Context context) {
     for (Object extension : context.getExtensions()) {
       Boolean isSlPluginOrNull = pluginInfo.isSonarLintSupported();
@@ -103,6 +80,29 @@ public class ExtensionInstaller {
 
   private static String className(Object extension) {
     return extension instanceof Class ? ((Class) extension).getName() : extension.getClass().getName();
+  }
+
+  public ExtensionInstaller install(ComponentContainer container) {
+
+    // plugin extensions
+    for (PluginInfo pluginInfo : pluginRepository.getPluginInfos()) {
+      Plugin plugin = pluginRepository.getPluginInstance(pluginInfo.getKey());
+      Plugin.Context context = new Plugin.Context(sqRuntime);
+      plugin.define(context);
+      loadExtensions(container, pluginInfo, context);
+    }
+    List<ExtensionProvider> providers = container.getComponentsByType(ExtensionProvider.class);
+    for (ExtensionProvider provider : providers) {
+      Object object = provider.provide();
+      if (object instanceof Iterable) {
+        for (Object extension : (Iterable) object) {
+          container.addExtension(null, extension);
+        }
+      } else {
+        container.addExtension(null, object);
+      }
+    }
+    return this;
   }
 
 }

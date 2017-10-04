@@ -27,9 +27,9 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisCo
 
 public class SonarLintFileSystem extends DefaultFileSystem {
 
-  private FileIndexer indexer;
   private final DefaultFilePredicates filePredicates;
   private final InputPathCache moduleInputFileCache;
+  private FileIndexer indexer;
 
   public SonarLintFileSystem(StandaloneAnalysisConfiguration analysisConfiguration, InputPathCache moduleInputFileCache, FileIndexer indexer) {
     super(null, moduleInputFileCache);

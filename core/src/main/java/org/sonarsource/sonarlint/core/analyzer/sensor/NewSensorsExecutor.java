@@ -50,6 +50,13 @@ public class NewSensorsExecutor implements SensorsExecutor {
     this.sensorOptimizer = sensorOptimizer;
   }
 
+  private static void executeSensor(SensorContext context, Sensor sensor, DefaultSensorDescriptor descriptor) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Execute Sensor: {}", descriptor.name() != null ? descriptor.name() : StringUtils.describe(sensor));
+    }
+    sensor.execute(context);
+  }
+
   @Override
   public void execute() {
     for (Sensor sensor : sort(asList(sensors))) {
@@ -59,12 +66,5 @@ public class NewSensorsExecutor implements SensorsExecutor {
         executeSensor(context, sensor, descriptor);
       }
     }
-  }
-
-  private static void executeSensor(SensorContext context, Sensor sensor, DefaultSensorDescriptor descriptor) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Execute Sensor: {}", descriptor.name() != null ? descriptor.name() : StringUtils.describe(sensor));
-    }
-    sensor.execute(context);
   }
 }

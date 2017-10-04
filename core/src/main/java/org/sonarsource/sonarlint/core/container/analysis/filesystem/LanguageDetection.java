@@ -64,6 +64,10 @@ public class LanguageDetection {
     languagesToConsider.addAll(patternsByLanguage.keySet());
   }
 
+  static String sanitizeExtension(String suffix) {
+    return StringUtils.lowerCase(StringUtils.removeStart(suffix, "."));
+  }
+
   @CheckForNull
   String language(InputFile inputFile) {
     String detectedLanguage = null;
@@ -99,9 +103,5 @@ public class LanguageDetection {
 
   private String getDetails(String detectedLanguage) {
     return detectedLanguage + ": " + Joiner.on(",").join(patternsByLanguage.get(detectedLanguage));
-  }
-
-  static String sanitizeExtension(String suffix) {
-    return StringUtils.lowerCase(StringUtils.removeStart(suffix, "."));
   }
 }

@@ -44,6 +44,12 @@ public class FileMetadataTest {
   @Rule
   public LogTester logTester = new LogTester();
 
+  @AfterClass
+  public static void after() {
+    // to avoid conflicts with SonarLintLogging
+    new LogTester().setLevel(LoggerLevel.TRACE);
+  }
+
   @Test
   public void empty_file() throws Exception {
     File tempFile = temp.newFile();
@@ -53,12 +59,6 @@ public class FileMetadataTest {
     assertThat(metadata.lines).isEqualTo(1);
     assertThat(metadata.originalLineOffsets).containsOnly(0);
     assertThat(metadata.lastValidOffset).isEqualTo(0);
-  }
-
-  @AfterClass
-  public static void after() {
-    // to avoid conflicts with SonarLintLogging
-    new LogTester().setLevel(LoggerLevel.TRACE);
   }
 
   @Test

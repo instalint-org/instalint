@@ -178,6 +178,14 @@ public class ScannerExtensionDictionnaryTest {
     assertThat(extensions.get(2)).isEqualTo(checker);
   }
 
+  @DependsUpon("flag")
+  interface InterfaceDependsUpon extends BatchExtension {
+  }
+
+  @DependedUpon("flag")
+  interface InterfaceDependedUpon extends BatchExtension {
+  }
+
   class FakeSensor implements Sensor {
 
     public void analyse(Project project, SensorContext context) {
@@ -200,14 +208,6 @@ public class ScannerExtensionDictionnaryTest {
 
   @DependedUpon("flag")
   class ClassDependedUpon implements BatchExtension {
-  }
-
-  @DependsUpon("flag")
-  interface InterfaceDependsUpon extends BatchExtension {
-  }
-
-  @DependedUpon("flag")
-  interface InterfaceDependedUpon extends BatchExtension {
   }
 
   @Phase(name = Phase.Name.PRE)

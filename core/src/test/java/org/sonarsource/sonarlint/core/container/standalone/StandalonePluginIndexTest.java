@@ -41,14 +41,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StandalonePluginIndexTest {
-  private StandalonePluginIndex index;
-  private PluginCache cache;
-
   @Rule
   public ExpectedException exception = ExpectedException.none();
-
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
+  private StandalonePluginIndex index;
+  private PluginCache cache;
 
   @Before
   public void setUp() throws IOException {

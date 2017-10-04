@@ -50,14 +50,6 @@ public class ScannerExtensionDictionnary {
     this.sensorOptimizer = sensorOptimizer;
   }
 
-  public <T> Collection<T> select(Class<T> type, @Nullable Project project, boolean sort) {
-    List<T> result = getFilteredExtensions(type, project);
-    if (sort) {
-      return sort(result);
-    }
-    return result;
-  }
-
   private static Phase.Name evaluatePhase(Object extension) {
     Object extensionToEvaluate;
     if (extension instanceof SensorWrapper) {
@@ -70,34 +62,6 @@ public class ScannerExtensionDictionnary {
       return phaseAnnotation.name();
     }
     return Phase.Name.DEFAULT;
-  }
-
-  private <T> List<T> getFilteredExtensions(Class<T> type, @Nullable Project project) {
-    List<T> result = new ArrayList<>();
-    for (Object extension : getExtensions(type)) {
-      if (org.sonar.api.batch.Sensor.class.equals(type) && extension instanceof Sensor) {
-        extension = new SensorWrapper((Sensor) extension, sensorContext, sensorOptimizer);
-      }
-      if (shouldKeep(type, extension, project)) {
-        result.add((T) extension);
-      }
-    }
-    if (org.sonar.api.batch.Sensor.class.equals(type)) {
-      // Retrieve new Sensors and wrap then in SensorWrapper
-      for (Object extension : getExtensions(Sensor.class)) {
-        extension = new SensorWrapper((Sensor) extension, sensorContext, sensorOptimizer);
-        if (shouldKeep(type, extension, project)) {
-          result.add((T) extension);
-        }
-      }
-    }
-    return result;
-  }
-
-  protected List<Object> getExtensions(Class type) {
-    List<Object> extensions = new ArrayList<>();
-    completeBatchExtensions(componentContainer, extensions, type);
-    return extensions;
   }
 
   private static void completeBatchExtensions(@Nullable ComponentContainer container, List<Object> extensions, Class type) {
@@ -191,5 +155,41 @@ public class ScannerExtensionDictionnary {
       keep = ((CheckProject) extension).shouldExecuteOnProject(project);
     }
     return keep;
+  }
+
+  public <T> Collection<T> select(Class<T> type, @Nullable Project project, boolean sort) {
+    List<T> result = getFilteredExtensions(type, project);
+    if (sort) {
+      return sort(result);
+    }
+    return result;
+  }
+
+  private <T> List<T> getFilteredExtensions(Class<T> type, @Nullable Project project) {
+    List<T> result = new ArrayList<>();
+    for (Object extension : getExtensions(type)) {
+      if (org.sonar.api.batch.Sensor.class.equals(type) && extension instanceof Sensor) {
+        extension = new SensorWrapper((Sensor) extension, sensorContext, sensorOptimizer);
+      }
+      if (shouldKeep(type, extension, project)) {
+        result.add((T) extension);
+      }
+    }
+    if (org.sonar.api.batch.Sensor.class.equals(type)) {
+      // Retrieve new Sensors and wrap then in SensorWrapper
+      for (Object extension : getExtensions(Sensor.class)) {
+        extension = new SensorWrapper((Sensor) extension, sensorContext, sensorOptimizer);
+        if (shouldKeep(type, extension, project)) {
+          result.add((T) extension);
+        }
+      }
+    }
+    return result;
+  }
+
+  protected List<Object> getExtensions(Class type) {
+    List<Object> extensions = new ArrayList<>();
+    completeBatchExtensions(componentContainer, extensions, type);
+    return extensions;
   }
 }

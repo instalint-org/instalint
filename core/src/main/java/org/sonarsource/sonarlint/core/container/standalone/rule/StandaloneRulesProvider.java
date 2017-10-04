@@ -30,13 +30,6 @@ import org.sonar.api.server.rule.RulesDefinition.Param;
 public class StandaloneRulesProvider extends ProviderAdapter {
   private Rules singleton = null;
 
-  public Rules provide(StandaloneRuleDefinitionsLoader pluginRulesLoader) {
-    if (singleton == null) {
-      singleton = createRules(pluginRulesLoader);
-    }
-    return singleton;
-  }
-
   private static Rules createRules(StandaloneRuleDefinitionsLoader pluginRulesLoader) {
     RulesBuilder builder = new RulesBuilder();
 
@@ -56,5 +49,12 @@ public class StandaloneRulesProvider extends ProviderAdapter {
     }
 
     return builder.build();
+  }
+
+  public Rules provide(StandaloneRuleDefinitionsLoader pluginRulesLoader) {
+    if (singleton == null) {
+      singleton = createRules(pluginRulesLoader);
+    }
+    return singleton;
   }
 }

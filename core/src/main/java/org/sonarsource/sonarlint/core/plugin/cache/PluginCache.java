@@ -54,47 +54,6 @@ public class PluginCache {
     return new PluginCache(cachePath, new PluginHashes());
   }
 
-  public Path getCacheDir() {
-    return cacheDir;
-  }
-
-  /**
-   * Look for a file in the cache by its filename and md5 checksum. If the file is not
-   * present then return null.
-   */
-  @CheckForNull
-  public Path get(String filename, String hash) {
-    Path cachedFile = cacheDir.resolve(hash).resolve(filename);
-    if (Files.exists(cachedFile)) {
-      return cachedFile;
-    }
-    LOG.debug("No file found in the cache with name {} and hash {}", filename, hash);
-    return null;
-  }
-
-  @FunctionalInterface
-  public interface Copier {
-    void copy(String filename, Path toFile) throws IOException;
-  }
-
-  public Path get(String filename, String hash, Copier copier) {
-    // Does not fail if another process tries to create the directory at the same time.
-    Path hashDir = hashDir(hash);
-    Path targetFile = hashDir.resolve(filename);
-    if (Files.notExists(targetFile)) {
-      Path tempFile = newTempFile();
-      copy(copier, filename, tempFile);
-      String downloadedHash = hashes.of(tempFile);
-      if (!hash.equals(downloadedHash)) {
-        throw new IllegalStateException("INVALID HASH: File " + tempFile + " was expected to have hash " + hash
-          + " but was copied with hash " + downloadedHash);
-      }
-      createDirIfNeeded(hashDir, "target directory in cache");
-      renameQuietly(tempFile, targetFile);
-    }
-    return targetFile;
-  }
-
   private static void copy(Copier copier, String filename, Path tempFile) {
     try {
       copier.copy(filename, tempFile);
@@ -123,6 +82,51 @@ public class PluginCache {
     }
   }
 
+  private static void createDirIfNeeded(Path dir, String debugTitle) {
+    LOG.debug("Create : {}", dir);
+    try {
+      Files.createDirectories(dir);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to create " + debugTitle + dir, e);
+    }
+  }
+
+  public Path getCacheDir() {
+    return cacheDir;
+  }
+
+  /**
+   * Look for a file in the cache by its filename and md5 checksum. If the file is not
+   * present then return null.
+   */
+  @CheckForNull
+  public Path get(String filename, String hash) {
+    Path cachedFile = cacheDir.resolve(hash).resolve(filename);
+    if (Files.exists(cachedFile)) {
+      return cachedFile;
+    }
+    LOG.debug("No file found in the cache with name {} and hash {}", filename, hash);
+    return null;
+  }
+
+  public Path get(String filename, String hash, Copier copier) {
+    // Does not fail if another process tries to create the directory at the same time.
+    Path hashDir = hashDir(hash);
+    Path targetFile = hashDir.resolve(filename);
+    if (Files.notExists(targetFile)) {
+      Path tempFile = newTempFile();
+      copy(copier, filename, tempFile);
+      String downloadedHash = hashes.of(tempFile);
+      if (!hash.equals(downloadedHash)) {
+        throw new IllegalStateException("INVALID HASH: File " + tempFile + " was expected to have hash " + hash
+          + " but was copied with hash " + downloadedHash);
+      }
+      createDirIfNeeded(hashDir, "target directory in cache");
+      renameQuietly(tempFile, targetFile);
+    }
+    return targetFile;
+  }
+
   private Path hashDir(String hash) {
     return cacheDir.resolve(hash);
   }
@@ -143,12 +147,8 @@ public class PluginCache {
     }
   }
 
-  private static void createDirIfNeeded(Path dir, String debugTitle) {
-    LOG.debug("Create : {}", dir);
-    try {
-      Files.createDirectories(dir);
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to create " + debugTitle + dir, e);
-    }
+  @FunctionalInterface
+  public interface Copier {
+    void copy(String filename, Path toFile) throws IOException;
   }
 }

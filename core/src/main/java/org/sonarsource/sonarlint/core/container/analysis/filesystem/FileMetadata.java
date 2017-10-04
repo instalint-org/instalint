@@ -50,6 +50,84 @@ public class FileMetadata {
   private static final char LINE_FEED = '\n';
   private static final char CARRIAGE_RETURN = '\r';
 
+  private static InputStream streamFile(File file) {
+    try {
+      return new BOMInputStream(new FileInputStream(file),
+        ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+    } catch (FileNotFoundException e) {
+      throw new IllegalStateException("File not found: " + file.getAbsolutePath(), e);
+    }
+  }
+
+  private static void read(Reader reader, CharHandler... handlers) throws IOException {
+    char c;
+    int i = reader.read();
+    boolean afterCR = false;
+    while (i != -1) {
+      c = (char) i;
+      if (afterCR) {
+        for (CharHandler handler : handlers) {
+          if (c == CARRIAGE_RETURN) {
+            handler.newLine();
+            handler.handleAll(c);
+          } else if (c == LINE_FEED) {
+            handler.handleAll(c);
+            handler.newLine();
+          } else {
+            handler.newLine();
+            handler.handleAll(c);
+          }
+        }
+        afterCR = c == CARRIAGE_RETURN;
+      } else if (c == LINE_FEED) {
+        for (CharHandler handler : handlers) {
+          handler.handleAll(c);
+          handler.newLine();
+        }
+      } else if (c == CARRIAGE_RETURN) {
+        afterCR = true;
+        for (CharHandler handler : handlers) {
+          handler.handleAll(c);
+        }
+      } else {
+        for (CharHandler handler : handlers) {
+          handler.handleAll(c);
+        }
+      }
+      i = reader.read();
+    }
+    for (CharHandler handler : handlers) {
+      if (afterCR) {
+        handler.newLine();
+      }
+      handler.eof();
+    }
+  }
+
+  /**
+   * Compute hash of a file ignoring line ends differences.
+   * Maximum performance is needed.
+   */
+  public Metadata readMetadata(File file, Charset encoding) {
+    InputStream stream = streamFile(file);
+    return readMetadata(stream, encoding, file.getAbsolutePath());
+  }
+
+  /**
+   * Compute hash of an inputStream ignoring line ends differences.
+   * Maximum performance is needed.
+   */
+  public Metadata readMetadata(InputStream stream, Charset encoding, String filePath) {
+    LineCounter lineCounter = new LineCounter(filePath, encoding);
+    LineOffsetCounter lineOffsetCounter = new LineOffsetCounter();
+    try (Reader reader = new BufferedReader(new InputStreamReader(stream, encoding))) {
+      read(reader, lineCounter, lineOffsetCounter);
+    } catch (IOException e) {
+      throw new IllegalStateException(String.format("Fail to read file '%s' with encoding '%s'", filePath, encoding), e);
+    }
+    return new Metadata(lineCounter.lines(), lineOffsetCounter.getOriginalLineOffsets(), lineOffsetCounter.getLastValidOffset());
+  }
+
   public abstract static class CharHandler {
 
     abstract void handleAll(char c);
@@ -61,10 +139,10 @@ public class FileMetadata {
   }
 
   private static class LineCounter extends CharHandler {
-    private int lines = 1;
-    boolean alreadyLoggedInvalidCharacter = false;
     private final String filePath;
     private final Charset encoding;
+    boolean alreadyLoggedInvalidCharacter = false;
+    private int lines = 1;
 
     LineCounter(String filePath, Charset encoding) {
       this.filePath = filePath;
@@ -124,84 +202,6 @@ public class FileMetadata {
       return lastValidOffset;
     }
 
-  }
-
-  /**
-   * Compute hash of a file ignoring line ends differences.
-   * Maximum performance is needed.
-   */
-  public Metadata readMetadata(File file, Charset encoding) {
-    InputStream stream = streamFile(file);
-    return readMetadata(stream, encoding, file.getAbsolutePath());
-  }
-
-  /**
-   * Compute hash of an inputStream ignoring line ends differences.
-   * Maximum performance is needed.
-   */
-  public Metadata readMetadata(InputStream stream, Charset encoding, String filePath) {
-    LineCounter lineCounter = new LineCounter(filePath, encoding);
-    LineOffsetCounter lineOffsetCounter = new LineOffsetCounter();
-    try (Reader reader = new BufferedReader(new InputStreamReader(stream, encoding))) {
-      read(reader, lineCounter, lineOffsetCounter);
-    } catch (IOException e) {
-      throw new IllegalStateException(String.format("Fail to read file '%s' with encoding '%s'", filePath, encoding), e);
-    }
-    return new Metadata(lineCounter.lines(), lineOffsetCounter.getOriginalLineOffsets(), lineOffsetCounter.getLastValidOffset());
-  }
-
-  private static InputStream streamFile(File file) {
-    try {
-      return new BOMInputStream(new FileInputStream(file),
-        ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
-    } catch (FileNotFoundException e) {
-      throw new IllegalStateException("File not found: " + file.getAbsolutePath(), e);
-    }
-  }
-
-  private static void read(Reader reader, CharHandler... handlers) throws IOException {
-    char c;
-    int i = reader.read();
-    boolean afterCR = false;
-    while (i != -1) {
-      c = (char) i;
-      if (afterCR) {
-        for (CharHandler handler : handlers) {
-          if (c == CARRIAGE_RETURN) {
-            handler.newLine();
-            handler.handleAll(c);
-          } else if (c == LINE_FEED) {
-            handler.handleAll(c);
-            handler.newLine();
-          } else {
-            handler.newLine();
-            handler.handleAll(c);
-          }
-        }
-        afterCR = c == CARRIAGE_RETURN;
-      } else if (c == LINE_FEED) {
-        for (CharHandler handler : handlers) {
-          handler.handleAll(c);
-          handler.newLine();
-        }
-      } else if (c == CARRIAGE_RETURN) {
-        afterCR = true;
-        for (CharHandler handler : handlers) {
-          handler.handleAll(c);
-        }
-      } else {
-        for (CharHandler handler : handlers) {
-          handler.handleAll(c);
-        }
-      }
-      i = reader.read();
-    }
-    for (CharHandler handler : handlers) {
-      if (afterCR) {
-        handler.newLine();
-      }
-      handler.eof();
-    }
   }
 
   public static class Metadata {

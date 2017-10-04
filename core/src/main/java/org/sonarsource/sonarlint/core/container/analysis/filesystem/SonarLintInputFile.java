@@ -43,6 +43,10 @@ public class SonarLintInputFile extends DefaultInputFile {
     this.clientInputFile = clientInputFile;
   }
 
+  private static UnsupportedOperationException unsupported() {
+    return new UnsupportedOperationException("Unsupported in SonarLint");
+  }
+
   public ClientInputFile getClientInputFile() {
     return clientInputFile;
   }
@@ -112,10 +116,6 @@ public class SonarLintInputFile extends DefaultInputFile {
   @Override
   public String moduleKey() {
     throw unsupported();
-  }
-
-  private static UnsupportedOperationException unsupported() {
-    return new UnsupportedOperationException("Unsupported in SonarLint");
   }
 
   @Override

@@ -44,13 +44,11 @@ import static org.mockito.Mockito.when;
 
 public class PluginHashesTest {
 
-  SecureRandom secureRandom = new SecureRandom();
-
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
+  SecureRandom secureRandom = new SecureRandom();
 
   @Test
   public void test_md5_hash() {

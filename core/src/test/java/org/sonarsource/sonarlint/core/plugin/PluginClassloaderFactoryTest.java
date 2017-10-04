@@ -37,42 +37,6 @@ public class PluginClassloaderFactoryTest {
 
   private PluginClassloaderFactory factory = new PluginClassloaderFactory();
 
-  @Test
-  public void create_isolated_classloader() {
-    PluginClassLoaderDef def = basePluginDef();
-    Map<PluginClassLoaderDef, ClassLoader> map = factory.create(asList(def));
-
-    assertThat(map).containsOnlyKeys(def);
-    ClassLoader classLoader = map.get(def);
-
-    // plugin can access to API classes, and of course to its own classes !
-    assertThat(canLoadClass(classLoader, RulesDefinition.class.getCanonicalName())).isTrue();
-    assertThat(canLoadClass(classLoader, BASE_PLUGIN_CLASSNAME)).isTrue();
-
-    // plugin can not access to core classes
-    assertThat(canLoadClass(classLoader, PluginClassloaderFactory.class.getCanonicalName())).isFalse();
-    assertThat(canLoadClass(classLoader, Test.class.getCanonicalName())).isFalse();
-    assertThat(canLoadClass(classLoader, StringUtils.class.getCanonicalName())).isFalse();
-  }
-
-  @Test
-  public void classloader_exports_resources_to_other_classloaders() {
-    PluginClassLoaderDef baseDef = basePluginDef();
-    PluginClassLoaderDef dependentDef = dependentPluginDef();
-    Map<PluginClassLoaderDef, ClassLoader> map = factory.create(asList(baseDef, dependentDef));
-    ClassLoader baseClassloader = map.get(baseDef);
-    ClassLoader dependentClassloader = map.get(dependentDef);
-
-    // base-plugin exports its API package to other plugins
-    assertThat(canLoadClass(dependentClassloader, "org.sonar.plugins.base.api.BaseApi")).isTrue();
-    assertThat(canLoadClass(dependentClassloader, BASE_PLUGIN_CLASSNAME)).isFalse();
-    assertThat(canLoadClass(dependentClassloader, DEPENDENT_PLUGIN_CLASSNAME)).isTrue();
-
-    // dependent-plugin does not export its classes
-    assertThat(canLoadClass(baseClassloader, DEPENDENT_PLUGIN_CLASSNAME)).isFalse();
-    assertThat(canLoadClass(baseClassloader, BASE_PLUGIN_CLASSNAME)).isTrue();
-  }
-
   private static PluginClassLoaderDef basePluginDef() {
     PluginClassLoaderDef def = new PluginClassLoaderDef(BASE_PLUGIN_KEY);
     def.addMainClass(BASE_PLUGIN_KEY, BASE_PLUGIN_CLASSNAME);
@@ -109,5 +73,41 @@ public class PluginClassloaderFactoryTest {
     } catch (ClassNotFoundException e) {
       return false;
     }
+  }
+
+  @Test
+  public void create_isolated_classloader() {
+    PluginClassLoaderDef def = basePluginDef();
+    Map<PluginClassLoaderDef, ClassLoader> map = factory.create(asList(def));
+
+    assertThat(map).containsOnlyKeys(def);
+    ClassLoader classLoader = map.get(def);
+
+    // plugin can access to API classes, and of course to its own classes !
+    assertThat(canLoadClass(classLoader, RulesDefinition.class.getCanonicalName())).isTrue();
+    assertThat(canLoadClass(classLoader, BASE_PLUGIN_CLASSNAME)).isTrue();
+
+    // plugin can not access to core classes
+    assertThat(canLoadClass(classLoader, PluginClassloaderFactory.class.getCanonicalName())).isFalse();
+    assertThat(canLoadClass(classLoader, Test.class.getCanonicalName())).isFalse();
+    assertThat(canLoadClass(classLoader, StringUtils.class.getCanonicalName())).isFalse();
+  }
+
+  @Test
+  public void classloader_exports_resources_to_other_classloaders() {
+    PluginClassLoaderDef baseDef = basePluginDef();
+    PluginClassLoaderDef dependentDef = dependentPluginDef();
+    Map<PluginClassLoaderDef, ClassLoader> map = factory.create(asList(baseDef, dependentDef));
+    ClassLoader baseClassloader = map.get(baseDef);
+    ClassLoader dependentClassloader = map.get(dependentDef);
+
+    // base-plugin exports its API package to other plugins
+    assertThat(canLoadClass(dependentClassloader, "org.sonar.plugins.base.api.BaseApi")).isTrue();
+    assertThat(canLoadClass(dependentClassloader, BASE_PLUGIN_CLASSNAME)).isFalse();
+    assertThat(canLoadClass(dependentClassloader, DEPENDENT_PLUGIN_CLASSNAME)).isTrue();
+
+    // dependent-plugin does not export its classes
+    assertThat(canLoadClass(baseClassloader, DEPENDENT_PLUGIN_CLASSNAME)).isFalse();
+    assertThat(canLoadClass(baseClassloader, BASE_PLUGIN_CLASSNAME)).isTrue();
   }
 }

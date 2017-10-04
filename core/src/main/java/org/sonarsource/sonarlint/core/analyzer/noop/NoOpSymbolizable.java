@@ -30,6 +30,15 @@ public class NoOpSymbolizable implements Symbolizable {
   private static final NoOpSymbolTable NO_OP_SYMBOL_TABLE = new NoOpSymbolTable();
   private static final NoOpSymbol NO_OP_SYMBOL = new NoOpSymbol();
 
+  @Override
+  public SymbolTableBuilder newSymbolTableBuilder() {
+    return NO_OP_SYMBOL_TABLE_BUILDER;
+  }
+
+  @Override
+  public void setSymbolTable(SymbolTable symbolTable) {
+  }
+
   private static final class NoOpSymbolTableBuilder implements SymbolTableBuilder {
     @Override
     public Symbol newSymbol(int fromOffset, int toOffset) {
@@ -89,14 +98,5 @@ public class NoOpSymbolizable implements Symbolizable {
     public int getDeclarationEndOffset() {
       return 0;
     }
-  }
-
-  @Override
-  public SymbolTableBuilder newSymbolTableBuilder() {
-    return NO_OP_SYMBOL_TABLE_BUILDER;
-  }
-
-  @Override
-  public void setSymbolTable(SymbolTable symbolTable) {
   }
 }

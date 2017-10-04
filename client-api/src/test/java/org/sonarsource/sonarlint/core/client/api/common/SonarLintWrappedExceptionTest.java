@@ -42,6 +42,13 @@ public class SonarLintWrappedExceptionTest {
     }
   }
 
+  @Test
+  public void extractMessageException() {
+    MessageException e = new MessageException("a");
+    Exception a = new IllegalStateException("a", new IllegalStateException("b", e));
+    assertThat(SonarLintWrappedException.wrap(a)).isEqualTo(e);
+  }
+
   private static class MyCustomException extends RuntimeException {
 
     public MyCustomException(String message) {
@@ -52,12 +59,5 @@ public class SonarLintWrappedExceptionTest {
       super(message, cause);
     }
 
-  }
-
-  @Test
-  public void extractMessageException() {
-    MessageException e = new MessageException("a");
-    Exception a = new IllegalStateException("a", new IllegalStateException("b", e));
-    assertThat(SonarLintWrappedException.wrap(a)).isEqualTo(e);
   }
 }

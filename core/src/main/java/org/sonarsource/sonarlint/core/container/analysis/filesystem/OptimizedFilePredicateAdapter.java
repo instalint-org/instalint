@@ -30,17 +30,17 @@ class OptimizedFilePredicateAdapter extends AbstractFilePredicate {
     this.unoptimizedPredicate = unoptimizedPredicate;
   }
 
-  @Override
-  public boolean apply(InputFile inputFile) {
-    return unoptimizedPredicate.apply(inputFile);
-  }
-
   public static OptimizedFilePredicate create(FilePredicate predicate) {
     if (predicate instanceof OptimizedFilePredicate) {
       return (OptimizedFilePredicate) predicate;
     } else {
       return new OptimizedFilePredicateAdapter(predicate);
     }
+  }
+
+  @Override
+  public boolean apply(InputFile inputFile) {
+    return unoptimizedPredicate.apply(inputFile);
   }
 
 }

@@ -36,27 +36,12 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.sonarlint.core.client.api.common.AbstractGlobalConfiguration;
 
 public class GlobalTempFolderProvider extends ProviderAdapter implements ComponentLifecycle<TempFolder> {
+  static final String TMP_NAME_PREFIX = ".sonartmp_";
   private static final Logger LOG = Loggers.get(GlobalTempFolderProvider.class);
   private static final long CLEAN_MAX_AGE = TimeUnit.DAYS.toMillis(21);
-  static final String TMP_NAME_PREFIX = ".sonartmp_";
   private boolean started = false;
 
   private DefaultTempFolder tempFolder;
-
-  public TempFolder provide(AbstractGlobalConfiguration globalConfiguration) {
-    if (tempFolder == null) {
-
-      Path workingPath = globalConfiguration.getWorkDir();
-      try {
-        cleanTempFolders(workingPath);
-      } catch (IOException e) {
-        LOG.error(String.format("failed to clean global working directory: %s", workingPath), e);
-      }
-      Path tempDir = createTempFolder(workingPath);
-      tempFolder = new DefaultTempFolder(tempDir.toFile(), true);
-    }
-    return tempFolder;
-  }
 
   private static Path createTempFolder(Path workingPath) {
     try {
@@ -80,6 +65,48 @@ public class GlobalTempFolderProvider extends ProviderAdapter implements Compone
         }
       }
     }
+  }
+
+  public TempFolder provide(AbstractGlobalConfiguration globalConfiguration) {
+    if (tempFolder == null) {
+
+      Path workingPath = globalConfiguration.getWorkDir();
+      try {
+        cleanTempFolders(workingPath);
+      } catch (IOException e) {
+        LOG.error(String.format("failed to clean global working directory: %s", workingPath), e);
+      }
+      Path tempDir = createTempFolder(workingPath);
+      tempFolder = new DefaultTempFolder(tempDir.toFile(), true);
+    }
+    return tempFolder;
+  }
+
+  @Override
+  public void start(PicoContainer container) {
+    started = true;
+  }
+
+  @Override
+  public void stop(PicoContainer container) {
+    if (tempFolder != null) {
+      tempFolder.stop();
+    }
+  }
+
+  @Override
+  public void dispose(PicoContainer container) {
+    // nothing to do
+  }
+
+  @Override
+  public boolean componentHasLifecycle() {
+    return true;
+  }
+
+  @Override
+  public boolean isStarted() {
+    return started;
   }
 
   private static class CleanFilter implements DirectoryStream.Filter<Path> {
@@ -108,32 +135,5 @@ public class GlobalTempFolderProvider extends ProviderAdapter implements Compone
       long creationTime = attrs.creationTime().toMillis();
       return creationTime < threshold;
     }
-  }
-
-  @Override
-  public void start(PicoContainer container) {
-    started = true;
-  }
-
-  @Override
-  public void stop(PicoContainer container) {
-    if (tempFolder != null) {
-      tempFolder.stop();
-    }
-  }
-
-  @Override
-  public void dispose(PicoContainer container) {
-    // nothing to do
-  }
-
-  @Override
-  public boolean componentHasLifecycle() {
-    return true;
-  }
-
-  @Override
-  public boolean isStarted() {
-    return started;
   }
 }

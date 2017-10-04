@@ -38,6 +38,16 @@ import org.sonar.api.batch.fs.internal.PathPattern;
  */
 public class DefaultFilePredicates implements FilePredicates {
 
+  private static String toAbsolutePattern(String pattern) {
+    if (pattern.startsWith("file:")) {
+      return pattern;
+    }
+    if (pattern.startsWith("**")) {
+      return "file:" + pattern;
+    }
+    return "file:**/" + pattern;
+  }
+
   /**
    * Returns a predicate that always evaluates to true
    */
@@ -82,16 +92,6 @@ public class DefaultFilePredicates implements FilePredicates {
       predicates[i] = new PathPatternPredicate(PathPattern.create(toAbsolutePattern(inclusionPatterns[i])));
     }
     return or(predicates);
-  }
-
-  private static String toAbsolutePattern(String pattern) {
-    if (pattern.startsWith("file:")) {
-      return pattern;
-    }
-    if (pattern.startsWith("**")) {
-      return "file:" + pattern;
-    }
-    return "file:**/" + pattern;
   }
 
   @Override

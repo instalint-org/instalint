@@ -46,6 +46,24 @@ public class RuleFinderCompatibility implements RuleFinder {
     this.context = rules.getContext();
   }
 
+  @CheckForNull
+  private static Rule toRule(@Nullable RulesDefinition.Rule ar) {
+    return ar == null ? null : toRuleNotNull(ar);
+  }
+
+  private static Rule toRuleNotNull(RulesDefinition.Rule ruleDef) {
+    Rule rule = Rule.create(ruleDef.repository().key(), ruleDef.key())
+      .setName(ruleDef.name())
+      .setSeverity(RulePriority.valueOf(ruleDef.severity()))
+      .setLanguage(ruleDef.repository().language())
+      .setIsTemplate(ruleDef.template())
+      .setConfigKey(ruleDef.internalKey());
+    for (Param param : ruleDef.params()) {
+      rule.createParameter(param.key()).setDefaultValue(param.defaultValue()).setDescription(param.description());
+    }
+    return rule;
+  }
+
   @Override
   public Rule findById(int ruleId) {
     throw new UnsupportedOperationException("Unable to find rule by id");
@@ -98,24 +116,6 @@ public class RuleFinderCompatibility implements RuleFinder {
   private Collection<Rule> byKey(RuleQuery query) {
     Rule rule = findByKey(query.getRepositoryKey(), query.getKey());
     return rule != null ? Arrays.asList(rule) : Collections.<Rule>emptyList();
-  }
-
-  @CheckForNull
-  private static Rule toRule(@Nullable RulesDefinition.Rule ar) {
-    return ar == null ? null : toRuleNotNull(ar);
-  }
-
-  private static Rule toRuleNotNull(RulesDefinition.Rule ruleDef) {
-    Rule rule = Rule.create(ruleDef.repository().key(), ruleDef.key())
-      .setName(ruleDef.name())
-      .setSeverity(RulePriority.valueOf(ruleDef.severity()))
-      .setLanguage(ruleDef.repository().language())
-      .setIsTemplate(ruleDef.template())
-      .setConfigKey(ruleDef.internalKey());
-    for (Param param : ruleDef.params()) {
-      rule.createParameter(param.key()).setDefaultValue(param.defaultValue()).setDescription(param.description());
-    }
-    return rule;
   }
 
 }

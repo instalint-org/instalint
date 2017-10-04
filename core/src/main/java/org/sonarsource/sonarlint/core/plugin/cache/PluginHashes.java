@@ -33,6 +33,21 @@ public class PluginHashes {
 
   private static final int STREAM_BUFFER_LENGTH = 1024;
 
+  private static byte[] digest(InputStream input, MessageDigest digest) throws IOException {
+    final byte[] buffer = new byte[STREAM_BUFFER_LENGTH];
+    int read = input.read(buffer, 0, STREAM_BUFFER_LENGTH);
+    while (read > -1) {
+      digest.update(buffer, 0, read);
+      read = input.read(buffer, 0, STREAM_BUFFER_LENGTH);
+    }
+    return digest.digest();
+  }
+
+  static String toHex(byte[] bytes) {
+    BigInteger bi = new BigInteger(1, bytes);
+    return String.format("%0" + (bytes.length << 1) + "x", bi);
+  }
+
   public String of(Path file) {
     try {
       return of(Files.newInputStream(file));
@@ -52,20 +67,5 @@ public class PluginHashes {
     } catch (Exception e) {
       throw new IllegalStateException("Fail to compute hash", e);
     }
-  }
-
-  private static byte[] digest(InputStream input, MessageDigest digest) throws IOException {
-    final byte[] buffer = new byte[STREAM_BUFFER_LENGTH];
-    int read = input.read(buffer, 0, STREAM_BUFFER_LENGTH);
-    while (read > -1) {
-      digest.update(buffer, 0, read);
-      read = input.read(buffer, 0, STREAM_BUFFER_LENGTH);
-    }
-    return digest.digest();
-  }
-
-  static String toHex(byte[] bytes) {
-    BigInteger bi = new BigInteger(1, bytes);
-    return String.format("%0" + (bytes.length << 1) + "x", bi);
   }
 }
