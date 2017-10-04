@@ -3,8 +3,8 @@ package io.instalint.core;
 public class JavaScriptAnalyzerExecutorTest extends AbstractAnalyzerExecutorTest {
 
   @Override
-  String filename() {
-    return "sonar-javascript-plugin-3.1.1.5128.jar";
+  String languageCode() {
+    return "javascript";
   }
 
   @Override

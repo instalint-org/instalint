@@ -1,7 +1,8 @@
 package io.instalint.core;
 
-import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.Test;
 import org.sonarlint.daemon.LanguagePlugin;
 
@@ -10,14 +11,14 @@ import static org.junit.Assert.fail;
 
 public abstract class AbstractAnalyzerExecutorTest {
 
-  static AnalyzerExecutor executor = new AnalyzerExecutorImpl();
+  private static AnalyzerExecutor executor = new AnalyzerExecutorImpl();
 
   private LanguagePlugin languagePlugin = newLanguagePlugin();
 
   private LanguagePlugin newLanguagePlugin() {
     try {
-      return new LanguagePlugin(new File("../core/target/plugins", filename()).toURI().toURL(), null, inputFileExtension());
-    } catch (MalformedURLException e) {
+      return new LanguagePlugin(findPluginFile(languageCode()).toUri().toURL(), null, inputFileExtension());
+    } catch (IOException e) {
       e.printStackTrace();
       fail();
     }
@@ -25,7 +26,12 @@ public abstract class AbstractAnalyzerExecutorTest {
     return null;
   }
 
-  abstract String filename();
+  private Path findPluginFile(String languageCode) throws IOException {
+    String glob = String.format("**/sonar-%s-plugin-*.jar", languageCode);
+    return PluginFileLocator.findFirst(Paths.get("../core/target/plugins"), glob);
+  }
+
+  abstract String languageCode();
 
   abstract String inputFileExtension();
 

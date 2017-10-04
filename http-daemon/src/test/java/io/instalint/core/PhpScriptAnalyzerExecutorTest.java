@@ -3,8 +3,8 @@ package io.instalint.core;
 public class PhpScriptAnalyzerExecutorTest extends AbstractAnalyzerExecutorTest {
 
   @Override
-  String filename() {
-    return "sonar-php-plugin-2.10.0.2087.jar";
+  String languageCode() {
+    return "php";
   }
 
   @Override
