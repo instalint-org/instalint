@@ -8,11 +8,6 @@ public class PhpScriptAnalyzerExecutorTest extends AbstractAnalyzerExecutorTest 
   }
 
   @Override
-  String inputFileExtension() {
-    return "php";
-  }
-
-  @Override
   String validExampleCode() {
     return "<?php\n" +
       "    // var arr = [1, 2, 3];\n" +

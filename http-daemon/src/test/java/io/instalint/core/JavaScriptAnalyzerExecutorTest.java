@@ -8,11 +8,6 @@ public class JavaScriptAnalyzerExecutorTest extends AbstractAnalyzerExecutorTest
   }
 
   @Override
-  String inputFileExtension() {
-    return "js";
-  }
-
-  @Override
   String validExampleCode() {
     return "    var arr = [1, 2, 3];\n" +
       "    for (i in arr) {\n" +

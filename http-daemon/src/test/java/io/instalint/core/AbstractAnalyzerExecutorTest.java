@@ -17,7 +17,9 @@ public abstract class AbstractAnalyzerExecutorTest {
 
   private LanguagePlugin newLanguagePlugin() {
     try {
-      return new LanguagePlugin(findPluginFile(languageCode()).toUri().toURL(), null, inputFileExtension());
+      String languageCode = languageCode();
+      String inputFileExtension = InputFileExtensions.fromLanguageCode(languageCode);
+      return new LanguagePlugin(findPluginFile(languageCode).toUri().toURL(), null, inputFileExtension);
     } catch (IOException e) {
       e.printStackTrace();
       fail();
@@ -32,8 +34,6 @@ public abstract class AbstractAnalyzerExecutorTest {
   }
 
   abstract String languageCode();
-
-  abstract String inputFileExtension();
 
   abstract String validExampleCode();
 
