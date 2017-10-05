@@ -8,9 +8,8 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sonarlint-http-daemon</artifactId>
-  <version>2.15-SNAPSHOT</version>
-  <name>InstaLint Http Daemon</name>
+  <artifactId>instalint-http-daemon</artifactId>
+  <name>Instalint Http Daemon</name>
   <packaging>war</packaging>
 
   <build>

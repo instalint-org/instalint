@@ -7,8 +7,8 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>instalint-cli</artifactId>
-  <name>InstaLint CLI</name>
+  <artifactId>instalint-core</artifactId>
+  <name>Instalint Core</name>
 
   <dependencies>
     <dependency>

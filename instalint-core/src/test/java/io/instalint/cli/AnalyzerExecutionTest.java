@@ -73,7 +73,7 @@ public abstract class AnalyzerExecutionTest {
 
   private static Result analyze() throws IOException {
     StandaloneGlobalConfiguration globalConfig = StandaloneGlobalConfiguration.builder()
-      .addPlugin(new File("../core/target/plugins", analyzerFilename).toURI().toURL())
+      .addPlugin(new File("../sonarlint-core/target/plugins", analyzerFilename).toURI().toURL())
       .build();
     StandaloneSonarLintEngine engine = new StandaloneSonarLintEngineImpl(globalConfig);
 

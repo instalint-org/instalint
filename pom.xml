@@ -9,10 +9,10 @@
   <name>InstaLint</name>
 
   <modules>
-    <module>cli</module>
-    <module>http-daemon</module>
-    <module>client-api</module>
-    <module>core</module>
+    <module>instalint-core</module>
+    <module>instalint-http-daemon</module>
+    <module>sonarlint-client-api</module>
+    <module>sonarlint-core</module>
   </modules>
 
   <properties>
