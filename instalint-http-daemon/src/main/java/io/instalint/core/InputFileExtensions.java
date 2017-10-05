@@ -8,6 +8,8 @@ public class InputFileExtensions {
   static Map<String, String> mappings = new HashMap<>();
   static {
     mappings.put("javascript", "js");
+    mappings.put("php", "php");
+    mappings.put("python", "py");
   }
 
   private InputFileExtensions() {
