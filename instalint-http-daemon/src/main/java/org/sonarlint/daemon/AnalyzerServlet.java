@@ -65,10 +65,10 @@ public class AnalyzerServlet extends HttpServlet {
 
   private String getLanguageVersion(HttpServletRequest req) {
     String languageVersion = req.getParameter("languageVersion");
-    if (languageVersion.isEmpty()) {
-      languageVersion = null;
+    if (languageVersion == null || languageVersion.isEmpty()) {
+      languageVersion = "latest";
     }
-    if (languageVersion != null && !languageVersion.matches("^[a-zA-Z0-9\\.]*$")) {
+    if (!languageVersion.matches("^[a-zA-Z0-9\\.]*$")) {
       throw new IllegalStateException("Invalid language version");
     }
     return languageVersion;
