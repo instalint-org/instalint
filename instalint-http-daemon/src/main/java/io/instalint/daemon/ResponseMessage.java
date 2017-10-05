@@ -54,7 +54,7 @@ public class ResponseMessage {
       OutputStreamWriter writer = new OutputStreamWriter(outputStream, UTF_8);
       JsonWriter json = JsonWriter.of(writer)) {
       json.beginObject();
-      writeLines(json);
+      json.prop("code", code);
       writePagination(json);
       writeIssues(json);
       writeStore(json);
@@ -65,34 +65,6 @@ public class ResponseMessage {
       json.endObject();
     }
     resp.setStatus(200);
-  }
-
-  private void writeLines(JsonWriter json) {
-    json.name("lines");
-    json.beginArray();
-    AtomicInteger i = new AtomicInteger();
-    AtomicReference<String> line = new AtomicReference<>("");
-
-    List<CodePiece> pieces = new Underliner(code).underline(analyzerResult.issues());
-
-    pieces.forEach(piece -> {
-      if (piece.getType() == PieceType.LINE_START) {
-        json.beginObject();
-        json.prop("line", i.getAndIncrement());
-      } else if (piece.getType() == PieceType.UNDERLINE_START) {
-        line.getAndUpdate(l -> l + "<span class=\"source-line-code-issue\">");
-      } else if (piece.getType() == PieceType.TEXT) {
-        line.getAndUpdate(l -> l + escapeHTML(piece.getText()));
-      } else if (piece.getType() == PieceType.UNDERLINE_END) {
-        line.getAndUpdate(l -> l + "</span>");
-      } else if (piece.getType() == PieceType.LINE_END) {
-        json.prop("code", line.getAndSet(""));
-        json.endObject();
-      }
-    });
-    json.endArray();
-
-    json.prop("code", code);
   }
 
   private void writePagination(JsonWriter json) {
