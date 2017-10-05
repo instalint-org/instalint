@@ -160,17 +160,7 @@ function analyze(store) {
         }
         document.getElementById("result").style.opacity = 1;
 
-        var newContent = "";
-        var firstLine = true;
-        for (var line in response.lines) {
-            if (firstLine == true) {
-                firstLine = false;
-            } else {
-                newContent += "<br/>";
-            }
-            var l = response.lines[line].code;
-            newContent += l;
-        }
+        var newContent = doFormat(response);
 
         if (storedAs != "" || store) {
             document.getElementById("input").value = response.code;
@@ -205,4 +195,49 @@ function analyze(store) {
         request.send(params);
         document.getElementById("result").style.opacity = 0.7;
     }
+}
+
+// test cases: https://jsfiddle.net/p9vdzhtd/14/
+function lineOffsets(code) {
+	var offsets = [];
+    var pos = 0;
+    code.split("\n").forEach(line => {
+        offsets.push(pos);
+        pos += line.length + 1;
+    });
+    offsets.push(pos);
+
+    return offsets;
+};
+
+function doFormat(response) {
+    var code = response.code;
+
+    var offsets = lineOffsets(code);
+    var lineHighlightStart = [];
+    var lineHighlightEnd = [];
+    var start, end;
+
+    response.highlightings.forEach(highlight => {
+        start = offsets[highlight.startLine - 1] + highlight.startOffset;
+        end = offsets[highlight.endLine - 1] + highlight.endOffset;
+        lineHighlightStart[start] = 1;
+        lineHighlightEnd[end] = 1;
+    });
+
+    var characterIndex;
+    var result = "";
+    for (characterIndex = 0; characterIndex <= code.length; characterIndex++) {
+        if (lineHighlightEnd[characterIndex]) {
+            result += '</span>';
+        }
+        if (lineHighlightStart[characterIndex]) {
+            result += '<span class="c">';
+        }
+        if (characterIndex < code.length) {
+            result += code[characterIndex];
+        }
+    }
+
+	return result;
 }
