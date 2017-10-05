@@ -67,8 +67,7 @@ public class AnalyzerServlet extends HttpServlet {
     String languageVersion = req.getParameter("languageVersion");
     if (languageVersion == null || languageVersion.isEmpty()) {
       languageVersion = "latest";
-    }
-    if (!languageVersion.matches("^[a-zA-Z0-9\\.]*$")) {
+    } else if (!languageVersion.matches("^[a-zA-Z0-9\\.]*$")) {
       throw new IllegalStateException("Invalid language version");
     }
     return languageVersion;
