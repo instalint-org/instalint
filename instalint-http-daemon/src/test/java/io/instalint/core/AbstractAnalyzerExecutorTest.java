@@ -30,7 +30,7 @@ public abstract class AbstractAnalyzerExecutorTest {
 
   private Path findPluginFile(String languageCode) throws IOException {
     String glob = String.format("**/sonar-%s-plugin-*.jar", languageCode);
-    return PluginFileLocator.findFirst(Paths.get("../core/target/plugins"), glob);
+    return PluginFileLocator.findFirst(Paths.get("../sonarlint-core/target/plugins"), glob);
   }
 
   abstract String languageCode();
