@@ -1,6 +1,6 @@
 
-languageVersion = "latest";
-storedAs = "";
+let languageVersion = "latest";
+let storedAs = "";
 
 function onInit() {
     useLocationHash();
@@ -90,7 +90,7 @@ function updateLocationHash() {
         }
     }
 
-    var newPath = "#/" + language;
+    var newPath = "#/" + lgitanguage;
     if (languageVersion != "latest") {
         newPath += "/" + languageVersion;
         if (storedAs != "") {
@@ -120,16 +120,16 @@ function analyze(store) {
             document.getElementById("result").innerHTML +=
             '<div class="issue">Parsing failed. Please make sure that your code does not contain any syntax errors.</div>';
         }
-        for (var issueCounter in response.errors) {
-            var issue = response.errors[issueCounter];
+        for (let issueCounter in response.errors) {
+            let issue = response.errors[issueCounter];
             document.getElementById("result").innerHTML +=
             '<div class="issue">'
             + issue.message
             + '<div class="issueDotDotDot">...</div>'
             + '</div>';
         }
-        for (var issueCounter in response.issues) {
-            var issue = response.issues[issueCounter];
+        for (let issueCounter in response.issues) {
+            let issue = response.issues[issueCounter];
             document.getElementById("result").innerHTML +=
             '<div class="issue">'
             + issue.message
