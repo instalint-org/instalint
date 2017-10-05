@@ -6,7 +6,7 @@
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>InstaLint</name>
+  <name>instalint</name>
 
   <modules>
     <module>instalint-core</module>

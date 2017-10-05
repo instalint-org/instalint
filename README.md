@@ -1,4 +1,4 @@
-InstaLint
+instalint
 =========
 
 Lint some code instantly ;-)
