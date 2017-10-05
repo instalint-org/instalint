@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;
-import org.sonarlint.daemon.LanguagePlugin;
+import io.instalint.daemon.LanguagePlugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;

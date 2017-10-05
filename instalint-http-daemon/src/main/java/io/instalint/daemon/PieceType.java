@@ -1,4 +1,4 @@
-package org.sonarlint.daemon;
+package io.instalint.daemon;
 
 public enum PieceType {
   LINE_START,

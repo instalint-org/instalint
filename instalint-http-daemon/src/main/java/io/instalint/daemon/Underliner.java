@@ -1,4 +1,4 @@
-package org.sonarlint.daemon;
+package io.instalint.daemon;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package org.sonarlint.daemon;
+package io.instalint.daemon;
 
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;

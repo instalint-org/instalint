@@ -1,4 +1,4 @@
-package org.sonarlint.daemon;
+package io.instalint.daemon;
 
 import java.io.FileInputStream;
 import java.io.IOException;

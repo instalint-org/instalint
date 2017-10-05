@@ -6,7 +6,7 @@
 
   <servlet>
     <servlet-name>AnalyzerServlet</servlet-name>
-    <servlet-class>org.sonarlint.daemon.AnalyzerServlet</servlet-class>
+    <servlet-class>io.instalint.daemon.AnalyzerServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
