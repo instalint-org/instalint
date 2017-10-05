@@ -65,7 +65,7 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
       throw new IllegalStateException("Could not create workdir");
     }
 
-    Path path = tmp.resolve("code.js");
+    Path path = tmp.resolve("code." + languagePlugin.getInputFileExtension());
 
     ClientInputFile clientInputFile = new ClientInputFile() {
       @Override
