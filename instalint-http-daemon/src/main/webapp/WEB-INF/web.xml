@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+  <servlet>
+    <servlet-name>AnalyzerServlet</servlet-name>
+    <servlet-class>io.instalint.daemon.AnalyzerServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AnalyzerServlet</servlet-name>
+    <url-pattern>/analyze</url-pattern>
+  </servlet-mapping>
+
+</web-app>
