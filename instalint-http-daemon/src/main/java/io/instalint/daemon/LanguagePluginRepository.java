@@ -24,7 +24,11 @@ public class LanguagePluginRepository {
     if ("latest".equals(languageVersion)) {
       languageVersion = properties.getProperty(languageCode + ".latestVersion");
     }
-    String fileProperty = properties.getProperty(languageCode + ".plugin." + languageVersion);
+    String filePropertyName = languageCode + ".plugin." + languageVersion;
+    String fileProperty = properties.getProperty(filePropertyName);
+    if (fileProperty == null) {
+      throw new IllegalArgumentException("Could not find property: " + filePropertyName);
+    }
     Path plugin = pluginDir.resolve(fileProperty);
     URL url;
     try {
