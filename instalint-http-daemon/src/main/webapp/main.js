@@ -126,7 +126,7 @@ function updateLocationHash() {
 
 function analyze(store) {
     console.log("analyze");
-    document.getElementById("result").style.opacity = 0.5;
+    document.getElementById("output").style.opacity = 0.5;
     var loc = window.location;
     var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "") + "/" + loc.pathname.split('/')[1];
     var url = baseUrl + (baseUrl.endsWith("/") ? "" : "/") + "analyze";
@@ -137,30 +137,8 @@ function analyze(store) {
 
         var response = JSON.parse(request.responseText);
 
-        document.getElementById("result").innerHTML = "";
-        if (!response.success) {
-            document.getElementById("result").innerHTML +=
-            '<div class="issue">Parsing failed. Please make sure that your code does not contain any syntax errors.</div>';
-        }
-        for (let issueCounter in response.errors) {
-            let issue = response.errors[issueCounter];
-            document.getElementById("result").innerHTML +=
-            '<div class="issue">'
-            + issue.message
-            + '<div class="issueDotDotDot">...</div>'
-            + '</div>';
-        }
-        for (let issueCounter in response.issues) {
-            let issue = response.issues[issueCounter];
-            document.getElementById("result").innerHTML +=
-            '<div class="issue">'
-            + issue.message
-            + '<div class="issueDotDotDot">...</div>'
-            + '</div>';
-        }
-        document.getElementById("result").style.opacity = 1;
-
-        var newContent = doFormat(response);
+        document.getElementById("output").innerHTML = doFormat(response);
+        document.getElementById("output").style.opacity = 1;
 
         if (storedAs != "" || store) {
             document.getElementById("input").value = response.code;
@@ -172,7 +150,6 @@ function analyze(store) {
             }
         }
         updateLocationHash();
-        document.getElementById("output").innerHTML = newContent;
     }
 
     var language = document.getElementById("language").value;
@@ -193,7 +170,7 @@ function analyze(store) {
             params += "&code=" + encodeURIComponent(code);
         }
         request.send(params);
-        document.getElementById("result").style.opacity = 0.7;
+        document.getElementById("output").style.opacity = 0.7;
     }
 }
 
