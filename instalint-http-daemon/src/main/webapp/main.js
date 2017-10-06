@@ -112,7 +112,7 @@ function setNewLanguage(language) {
     }
 }
 
-function updateLocationHash() {
+function updateLocationHash(store) {
     var languageSelected = document.getElementsByClassName("languageButton-selected")[0];
     var language = languageSelected.innerHTML;
 
@@ -126,6 +126,9 @@ function updateLocationHash() {
 
     if (document.location.hash != newPath) {
         document.location.hash = newPath;
+    }
+    if (store) {
+        window.prompt("", window.location.href);
     }
 }
 
@@ -154,7 +157,7 @@ function analyze(store) {
                 storedAs = "";
             }
         }
-        updateLocationHash();
+        updateLocationHash(store);
     }
 
     var language = getCurrentLanguage();
