@@ -42,13 +42,13 @@
         body {
             display: grid;
             grid-template-rows: 100px 45px auto;
-            grid-template-columns: 1px 46% auto 1px;
+            grid-template-columns: 2vw 46% 2vw auto 2vw;
             grid-row-gap: 1vw;
-            grid-column-gap: 2vw;
+            grid-column-gap: 0;
             grid-template-areas:
-              "header-cell header-cell header-cell header-cell"
-              "a languageSelect-cell languageSelect-cell b"
-              "c input-cell output-cell d"
+              "blue1 header-cell header-cell header-cell blue2"
+              "a languageSelect-cell languageSelect-cell languageSelect-cell c"
+              "d input-cell e output-cell f"
             ;
             justify-items: stretch;
             align-items: stretch;
@@ -82,7 +82,7 @@
                 grid-row-gap: 10px;
                 grid-column-gap: 0px;
                 grid-template-areas:
-                  "header-cell header-cell header-cell"
+                  "blue1 header-cell blue2"
                   "a languageSelect-cell b"
                   "c input-cell d"
                   "e output-cell f"
@@ -114,7 +114,7 @@
             font-size: 32px;
             justify-self: start;
             align-self: center;
-            padding: 0 0 0 50px;
+            padding: 0 0 0 0;
             font-weight: normal;
             margin: 0;
             font-family: 'Roboto', sans-serif;
@@ -131,7 +131,7 @@
             justify-self: end;
             align-self: center;
             padding: 0 8px 4px 0;
-            margin: 20px;
+            margin: 0;
         }
 
         #motto {
@@ -234,11 +234,23 @@
             color: #0071ba;
             font-weight: 600;
         }
+
+        #blue1 {
+            background-color: #4b9fd5;
+            grid-area: blue1;
+        }
+
+        #blue2 {
+            background-color: #4b9fd5;
+            grid-area: blue2;
+        }
     </style>
     <title>Instalint - online code inspection</title>
 </head>
 
 <body onload="onInit()">
+
+<div id="blue1"></div>
 
 <div id="header">
 
@@ -254,6 +266,8 @@
         <a id="about" href="/about">About</a>
     </div>
 </div>
+
+<div id="blue2"></div>
 
 <div id="languageSelect">
     <div onclick="onLanguageClick('JavaScript')" id="JavaScript-btn" class="insta-button languageButton languageButton-selected">JavaScript</div>
