@@ -59,20 +59,12 @@ function useLocationHash() {
     var newLanguageValue = "JavaScript";
     var newLanguageVersion = "latest";
     var newStoredAs = "";
-    var languageSelect = document.getElementById("language");
     if (pathMatches) {
         var pathPartPattern = new RegExp("^(/(.*?))(/.*$|$)", "");
 
         var languageMatches = pathPartPattern.exec(pathMatches[1]);
         if (languageMatches) {
-            var language = languageMatches[2];
-
-            for (var optionCounter in languageSelect.options) {
-                var option = languageSelect.options[optionCounter];
-                if (option.label == language || option.value == language) {
-                    newLanguageValue = option.value;
-                }
-            }
+            newLanguageValue = languageMatches[2];
 
             var languageVersionMatches = pathPartPattern.exec(languageMatches[3]);
             if (languageVersionMatches) {
@@ -86,24 +78,43 @@ function useLocationHash() {
         }
     }
 
-    if (languageSelect.value != newLanguageValue || languageVersion != newLanguageVersion || storedAs != newStoredAs) {
-        if (languageSelect.value != newLanguageValue) {
-            languageSelect.value = newLanguageValue;
+    const currentLanguage = getCurrentLanguage();
+
+    if (currentLanguage !== newLanguageValue || languageVersion !== newLanguageVersion || storedAs !== newStoredAs) {
+        if (currentLanguage !== newLanguageValue) {
+            setNewLanguage(newLanguageValue);
         }
-        if (languageVersion != newLanguageVersion) {
+        if (languageVersion !== newLanguageVersion) {
             languageVersion = newLanguageVersion;
         }
-        if (storedAs != newStoredAs) {
+        if (storedAs !== newStoredAs) {
             storedAs = newStoredAs;
         }
         updateLocationHash();
         analyze(false);
     }
+
+}
+
+function getCurrentLanguage() {
+    return document.getElementsByClassName("languageButton-selected")[0].innerHTML;
+}
+
+function setNewLanguage(language) {
+    const languageButtons = document.getElementsByClassName("languageButton");
+    for (let i=0; i < languageButtons.length; i++) {
+      const languageButton = languageButtons[i];
+      if (languageButton.innerHTML === language) {
+        languageButton.classList.add("languageButton-selected");
+      } else {
+        languageButton.classList.remove("languageButton-selected");
+      }
+    }
 }
 
 function updateLocationHash() {
-    var languageSelect = document.getElementById("language");
-    var language = languageSelect.value;
+    var languageSelected = document.getElementsByClassName("languageButton-selected")[0];
+    var language = languageSelected.innerHTML;
 
     var newPath = "#/" + language;
     if (languageVersion != "latest") {
@@ -146,7 +157,7 @@ function analyze(store) {
         updateLocationHash();
     }
 
-    var language = document.getElementById("language").value;
+    var language = getCurrentLanguage();
     var code = document.getElementById("input").value;
 
     if (code === "" && storedAs === "") {
@@ -167,3 +178,9 @@ function analyze(store) {
         document.getElementById("output").style.opacity = 0.7;
     }
 }
+
+function onLanguageClick(language) {
+    setNewLanguage(language);
+    onLanguageChange();
+}
+
