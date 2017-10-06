@@ -3,10 +3,18 @@ const doneTypingInterval = 1000;  //time in ms
 let languageVersion = "latest";
 let storedAs = "";
 
+let languageExampleFunctions = {
+    "JavaScript": addJavaScriptExamples,
+    "Java": addJavaExamples,
+    "Python": addPythonExamples,
+    "PHP": addPhpExamples,
+};
+
 function onInit() {
     useLocationHash();
     updateLocationHash();
     window.onhashchange = onLocationHashChange;
+    setNewLanguage(getCurrentLanguage());
     analyze(false);
 }
 
@@ -101,6 +109,7 @@ function getCurrentLanguage() {
 }
 
 function setNewLanguage(language) {
+    console.log(language);
     const languageButtons = document.getElementsByClassName("languageButton");
     for (let i=0; i < languageButtons.length; i++) {
       const languageButton = languageButtons[i];
@@ -110,6 +119,77 @@ function setNewLanguage(language) {
         languageButton.classList.remove("languageButton-selected");
       }
     }
+
+    languageExampleFunctions[language]();
+}
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function showDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+function addJavaScriptExamples() {
+    const examplesDropdown = document.getElementById("myDropdown");
+    examplesDropdown.innerHTML = "";
+    const jsExamples = [
+        "exS1764.example.js",
+        "exS2583.example.js",
+        "exS930.example.js",
+        "exS1854.example.js",
+        "exUnreachableCode.example.js",
+        "exS2201.example.js",
+        "exS3699.example.js",
+        "exS2259.example.js",
+        "exS3923.example.js"
+    ];
+
+    jsExamples.forEach((element, index) => {
+        examplesDropdown.appendChild(createExample("#/JavaScript/3.2.0/" + element, index + 1));
+    });
+}
+
+function addJavaExamples() {
+    addLanguageExamples(["ex.example1.java", "ex.example2.java"], "Java", "4.14.0");
+}
+
+function addPythonExamples() {
+    addLanguageExamples(["ex.example1.py", "ex.example2.py"], "Python", "1.8.0");
+}
+
+function addPhpExamples() {
+    addLanguageExamples(["ex.example1.php", "ex.example2.php"], "PHP", "2.10.0");
+}
+
+function addLanguageExamples(exampleLinks, language, version) {
+    const examplesDropdown = document.getElementById("myDropdown");
+    examplesDropdown.innerHTML = "";
+
+    exampleLinks.forEach((element, index) => {
+        examplesDropdown.appendChild(createExample("#/" + language + "/" + version + "/" + element, index + 1));
+    });
+}
+
+function createExample(linkToExample, number) {
+    const link = document.createElement("a");
+    link.appendChild(document.createTextNode("Example #" + number));
+    link.setAttribute("href", linkToExample)
+    return link;
 }
 
 function updateLocationHash(store) {
