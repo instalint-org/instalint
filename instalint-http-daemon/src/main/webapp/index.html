@@ -194,7 +194,12 @@
             padding: 2px 8px;
             margin-right: 15px;
             font-weight: 400;
-            cursor: pointer
+            cursor: pointer;
+        }
+
+        #examples {
+            float: right;
+            margin-left: 20px
         }
 
         #store {
@@ -230,6 +235,70 @@
             color: #0071ba;
             font-weight: 600;
         }
+
+        /* inspired by: https://codepen.io/andornagy/pen/xhiJH */
+        nav ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            position: relative;
+        }
+
+        nav ul li {
+            display: inline-block;
+        }
+
+        nav a {
+            display: block;
+            font-size: 20px;
+            text-decoration: none;
+            color: #91d315;
+        }
+
+        nav ul ul {
+            padding: 2px .5em;
+            margin-top: 2px;
+            margin-left: -10px;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        nav ul ul a {
+            padding: .5em;
+            margin: 0 -.5em;
+            font-size: smaller;
+            color: black;
+            cursor: pointer;
+        }
+
+        nav ul ul a:hover {
+            padding: .5em;
+            margin: 0 -.5em;
+            background-color: #eee;
+        }
+
+        /* Hide Dropdowns by Default */
+        nav ul ul {
+            display: none;
+            position: absolute;
+            top: 30px; /* the height of the main nav */
+        }
+
+        /* Display Dropdowns on Hover */
+        nav ul li:hover > ul {
+            display: inherit;
+        }
+
+        /* Fisrt Tier Dropdown */
+        nav ul ul li {
+            width: 200px;
+            float: none;
+            display: list-item;
+            position: relative;
+        }
+
     </style>
     <title>Instalint - online code inspection</title>
 </head>
@@ -259,6 +328,22 @@
 
 
     <div onclick="onStoreRequest()" id="store" class="insta-button">Get link</div>
+
+    <div id="examples" class="dropdown">
+        <nav>
+            <ul class="dropbtn insta-button">
+                <li><a href="#">Try our examples</a>
+                    <ul>
+                        <li><a href="#">Link 1: demonstrating rule:abc</a></li>
+                        <li><a href="#">Link 2</a></li>
+                        <li><a href="#">Link 3</a></li>
+                        <li><a href="#">Link 4</a></li>
+                        <li><a href="#">Link 5</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 
 <textarea id="input" onchange="onInput()" oninput="onInput()" cols="80" rows="20" spellcheck="false">arr = [1, 2, 3];
