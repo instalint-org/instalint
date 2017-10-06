@@ -51,7 +51,7 @@ public class ExtensionInstaller {
       if (isExplicitlySonarLintCompatible) {
         // When plugin itself claim to be compatible with SonarLint, only load @SonarLintSide extensions
         // filter out non officially supported Sensors
-        if (ExtensionUtils.isSonarLintSide(extension) && (PluginCacheLoader.isWhitelisted(pluginInfo.getKey()) || isNotSensor(extension))) {
+        if (!blacklisted(extension) && ExtensionUtils.isSonarLintSide(extension) && (PluginCacheLoader.isWhitelisted(pluginInfo.getKey()) || isNotSensor(extension))) {
           container.addExtension(pluginInfo, extension);
         }
       } else if (!blacklisted(extension) && (ExtensionUtils.isScannerSide(extension) || ExtensionUtils.isType(extension, ProfileDefinition.class))) {

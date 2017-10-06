@@ -26,6 +26,7 @@
 
     <!-- Warning: these versions are also used by some test cases.
          When changing them, do a git grep and update all the used locations. -->
+    <sonar-java-plugin.version>4.14.0.11784</sonar-java-plugin.version>
     <sonar-javascript-plugin.version>3.1.1.5128</sonar-javascript-plugin.version>
     <sonar-python-plugin.version>1.8.0.1496</sonar-python-plugin.version>
     <sonar-php-plugin.version>2.10.0.2087</sonar-php-plugin.version>

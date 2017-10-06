@@ -50,6 +50,16 @@ The analysis results should appear within a second.
 
 ### Code samples that should report issues
 
+Java:
+
+```java
+public class Hello {
+  private int add(int a, int b) {
+    return a + b;
+  }
+}
+```
+
 JavaScript:
 
 ```javascript
