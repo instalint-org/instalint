@@ -1,25 +1,5 @@
 
-let typingTimer;                //timer identifier
 const doneTypingInterval = 1000;  //time in ms
-var $input = $('#input');
-
-//on keyup, start the countdown
-$input.on('keyup', function () {
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping, doneTypingInterval);
-});
-
-//on keydown, clear the countdown
-$input.on('keydown', function () {
-  clearTimeout(typingTimer);
-});
-
-//user is "finished typing," do something
-function doneTyping () {
-  onInput();
-}
-
-
 let languageVersion = "latest";
 let storedAs = "";
 
@@ -41,7 +21,28 @@ function onLanguageChange() {
     analyze(false);
 }
 
+var lastProcessedInput = new Date().getTime();
+var timer;
+
 function onInput() {
+    var now = new Date().getTime();
+    var executionDelay = lastProcessedInput + doneTypingInterval - now;
+    lastProcessedInput = new Date().getTime();
+    if (executionDelay < 0) {
+        onInitAndNotTooOften();
+    } else {
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(onInitAndNotTooOften, executionDelay);
+    }
+}
+
+function onInitAndNotTooOften() {
+    if (timer) {
+        clearTimeout(timer);
+    }
+    lastProcessedInput = new Date().getTime();
     storedAs = "";
     analyze(false);
 }
@@ -103,13 +104,6 @@ function useLocationHash() {
 function updateLocationHash() {
     var languageSelect = document.getElementById("language");
     var language = languageSelect.value;
-    var languageSelectLabel = "JavaScript";
-    for (var optionCounter in languageSelect.options) {
-        var option = languageSelect.options[optionCounter];
-        if (option.value == language) {
-            languageSelectLabel = option.label;
-        }
-    }
 
     var newPath = "#/" + language;
     if (languageVersion != "latest") {
@@ -185,7 +179,7 @@ function lineOffsets(code) {
     offsets.push(pos);
 
     return offsets;
-};
+}
 
 function doFormat(response) {
     var code = response.code;
