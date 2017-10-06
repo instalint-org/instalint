@@ -18,10 +18,13 @@ Using Maven:
 Running instalint
 -----------------
 
-Copy the analyzer plugins to the work directory of jetty:
- 
-    mkdir -pv instalint-http-daemon/null/work/Catalina/localhost/ROOT/plugins
-    cp sonarlint-core/target/plugins/*.jar instalint-http-daemon/null/work/Catalina/localhost/ROOT/plugins/
+Download latest versions of analyzers:
+
+    ./scripts/download-analyzers.sh
+
+Optionally, you can download all versions of all analyzers with:
+
+    ./scripts/download-analyzers.sh --all
 
 In `instalint-http-server`, run:
 
