@@ -41,7 +41,7 @@ public class AnalyzerServlet extends HttpServlet {
     AnalyzerExecutor executor = new AnalyzerExecutorImpl();
     AnalyzerResult result = executor.execute(languagePlugin, code);
 
-    new ResponseMessage(languageParam, languagePlugin.getLanguageVersion(), storedAs, code, result).writeTo(resp);
+    new ResponseMessage(languagePlugin.getLanguageVersion(), storedAs, code, result).writeTo(resp);
   }
 
   private String getLanguageVersion(HttpServletRequest req) {

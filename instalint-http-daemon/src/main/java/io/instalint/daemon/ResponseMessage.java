@@ -3,11 +3,8 @@ package io.instalint.daemon;
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.sonar.api.batch.fs.TextPointer;
@@ -20,33 +17,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ResponseMessage {
 
-  private final String language;
   private final String languageVersion;
   private final String storedAs;
   private final String code;
   private final AnalyzerResult analyzerResult;
 
-  public ResponseMessage(String language, String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
-    this.language = language;
+  public ResponseMessage(String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
     this.languageVersion = languageVersion;
     this.storedAs = storedAs;
     this.code = code;
     this.analyzerResult = analyzerResult;
-  }
-
-  public static String escapeHTML(String s) {
-    StringBuilder out = new StringBuilder(Math.max(16, s.length()));
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&') {
-        out.append("&#");
-        out.append((int) c);
-        out.append(';');
-      } else {
-        out.append(c);
-      }
-    }
-    return out.toString();
   }
 
   public void writeTo(HttpServletResponse resp) throws IOException {
