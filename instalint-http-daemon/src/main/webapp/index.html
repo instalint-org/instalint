@@ -44,13 +44,13 @@
         body {
             display: grid;
             grid-template-rows: 30px 55px auto;
-            grid-template-columns: 1px 30% 30% auto 1px;
+            grid-template-columns: 1px 46% auto 1px;
             grid-row-gap: 40px;
             grid-column-gap: 2%;
             grid-template-areas:
-              "header-cell header-cell header-cell header-cell header-cell"
-              "a languageSelect-cell languageSelect-cell languageSelect-cell b"
-              "c input-cell output-cell result-cell d"
+              "header-cell header-cell header-cell header-cell"
+              "a languageSelect-cell languageSelect-cell b"
+              "c input-cell output-cell d"
             ;
             justify-items: stretch;
             align-items: stretch;
@@ -79,7 +79,7 @@
             }
 
             body {
-                grid-template-rows: 30px auto auto auto auto;
+                grid-template-rows: 30px auto auto auto;
                 grid-template-columns: 5px auto 5px;
                 grid-row-gap: 10px;
                 grid-column-gap: 0px;
@@ -88,7 +88,6 @@
                   "a languageSelect-cell b"
                   "c input-cell d"
                   "e output-cell f"
-                  "g result-cell h"
                 ;
             }
         }
@@ -168,16 +167,7 @@
 
             padding: 10px;
             white-space: pre;
-        }
-
-        #result {
-          grid-area: result-cell;
-
-          padding: 10px 10px 15px 10px;
-          background: #f3f3f3;
-          color: black;
-          overflow: auto;
-          transition: opacity 0.3s;
+            transition: opacity 0.3s;
         }
 
         select {
@@ -262,8 +252,6 @@ for (var x in arr) {
 </textarea>
 
 <div id="output"></div>
-
-<div id="result"></div>
 <script src="main.js"></script>
 </body>
 </html>
