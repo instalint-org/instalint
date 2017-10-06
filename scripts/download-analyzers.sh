@@ -27,6 +27,8 @@ for arg; do
     esac
 done
 
+mkdir -p "$pluginsdir"
+
 diag() {
     echo "* $@" >&2
 }
