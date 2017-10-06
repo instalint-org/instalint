@@ -1,7 +1,5 @@
 
 const doneTypingInterval = 1000;  //time in ms
-var $input = $('#input');
-
 let languageVersion = "latest";
 let storedAs = "";
 
@@ -106,13 +104,6 @@ function useLocationHash() {
 function updateLocationHash() {
     var languageSelect = document.getElementById("language");
     var language = languageSelect.value;
-    var languageSelectLabel = "JavaScript";
-    for (var optionCounter in languageSelect.options) {
-        var option = languageSelect.options[optionCounter];
-        if (option.value == language) {
-            languageSelectLabel = option.label;
-        }
-    }
 
     var newPath = "#/" + language;
     if (languageVersion != "latest") {
@@ -211,7 +202,7 @@ function lineOffsets(code) {
     offsets.push(pos);
 
     return offsets;
-};
+}
 
 function doFormat(response) {
     var code = response.code;
