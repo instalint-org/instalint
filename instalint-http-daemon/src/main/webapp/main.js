@@ -214,15 +214,23 @@ function doFormat(response) {
     var code = response.code;
 
     var offsets = lineOffsets(code);
+
     var lineHighlightStart = [];
     var lineHighlightEnd = [];
-    var start, end;
-
     response.highlightings.forEach(highlight => {
-        start = offsets[highlight.startLine - 1] + highlight.startOffset;
-        end = offsets[highlight.endLine - 1] + highlight.endOffset;
-        lineHighlightStart[start] = 1;
+        var start = offsets[highlight.startLine - 1] + highlight.startOffset;
+        var end = offsets[highlight.endLine - 1] + highlight.endOffset;
+        lineHighlightStart[start] = highlight.cssClass;
         lineHighlightEnd[end] = 1;
+    });
+
+    var issueStart = [];
+    var issueEnd = [];
+    response.issues.map(issue => issue.textRange).forEach(highlight => {
+        var start = offsets[highlight.startLine - 1] + highlight.startOffset;
+        var end = offsets[highlight.endLine - 1] + highlight.endOffset;
+        issueStart[start] = 1;
+        issueEnd[end] = 1;
     });
 
     var characterIndex;
@@ -231,13 +239,19 @@ function doFormat(response) {
         if (lineHighlightEnd[characterIndex]) {
             result += '</span>';
         }
+        if (issueEnd[characterIndex]) {
+            result += '</span>';
+        }
+        if (issueStart[characterIndex]) {
+            result += '<span class="source-line-code-issue">';
+        }
         if (lineHighlightStart[characterIndex]) {
-            result += '<span class="c">';
+            result += '<span class="' + lineHighlightStart[characterIndex] + '">';
         }
         if (characterIndex < code.length) {
             result += code[characterIndex];
         }
     }
 
-	return result;
+    return result;
 }
