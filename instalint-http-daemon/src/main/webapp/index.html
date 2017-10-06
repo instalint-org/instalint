@@ -41,9 +41,9 @@
 
         body {
             display: grid;
-            grid-template-rows: 30px 55px auto;
+            grid-template-rows: 100px auto auto;
             grid-template-columns: 1px 46% auto 1px;
-            grid-row-gap: 40px;
+            grid-row-gap: 30px;
             grid-column-gap: 2%;
             grid-template-areas:
               "header-cell header-cell header-cell header-cell"
@@ -55,7 +55,7 @@
 
             margin: 0 0 10px 0;
             font-family: Helvetica Neue,Segoe UI,Helvetica,Arial,sans-serif;
-            background-color: #4b9fd5;
+            background-color: #f3f3f3;
             color: white;
             min-height:97vh;
         }
@@ -91,8 +91,9 @@
         }
 
         #header {
+            height: 100px;
             grid-area: header-cell;
-            background-color: #262626;
+            background-color: #4b9fd5;
 
             display: grid;
             grid-template-rows: auto;
@@ -100,18 +101,25 @@
             grid-row-gap: 0;
             grid-column-gap: 10px;
             grid-template-areas:
-              "logo-cell link-cell"
+              "logo-cell motto-cell link-cell"
             ;
 
         }
 
         #logo {
-            font-size: 16px;
+            font-size: 32px;
             justify-self: start;
             align-self: center;
-            padding: 0 0 0 10px;
+            padding: 0 0 0 50px;
             font-weight: normal;
             margin: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #logo-right {
+            font-weight: 700;
+            color: #014B7C;
+            padding-left: 3px
         }
 
         #link {
@@ -119,7 +127,17 @@
             justify-self: end;
             align-self: center;
             padding: 0 8px 4px 0;
+            margin: 20px;
+        }
+
+        #motto {
+            font-size: 25px;
+            grid-area: motto-cell;
+            justify-self: end;
+            align-self: center;
+            padding: 0 100px 0px 0;
             margin: 0;
+            font-family: 'Roboto', sans-serif;
         }
 
         #link a {
@@ -130,10 +148,6 @@
 
         #languageSelect {
             grid-area: languageSelect-cell;
-            font-size: 44px;
-            font-family:Roboto,sans-serif;
-            font-weight: 300;
-            margin: 0;
         }
 
         #input {
@@ -168,26 +182,29 @@
             transition: opacity 0.3s;
         }
 
-        select {
-          padding: 5px 35px 5px 5px;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          background: url(https://upload.wikimedia.org/wikipedia/commons/4/4f/TriangleArrow-Down.svg) 96% / 8% no-repeat #eee;
+        .languageButton {
+        }
 
-          margin: 0px 0px 0px 0px;
-          position: relative;
-          top: -6px;
-          border: solid 1px #91d315;
-          background-color: #91d315;
-          color: #225463;
-          height: 44px;
-          width: 170px;
-          text-transform: uppercase;
-          font-family: Roboto,sans-serif;
-          text-align: center;
-          font-weight: 500;
-          font-size: 16px;
+        .insta-button {
+            border: solid 2px #91d315;
+            color: #91d315;
+            font-size: 21px;
+            background: transparent;
+            display: inline-block;
+            padding: 2px 8px;
+            margin-right: 15px;
+            font-weight: 400;
+            cursor: pointer
+        }
+
+        #store {
+            float: right;
+            margin-right: 0;
+        }
+
+        .languageButton-selected {
+            border-color: #4b9fd5;
+            color: #4b9fd5;
         }
 
         /* CAUTION: IE hackery ahead */
@@ -222,26 +239,27 @@
 <div id="header">
 
     <h1 id="logo">
-        instalint
+        INSTA<span id="logo-right">LINT</span>
     </h1>
 
+    <div id="motto">
+        Use the power of Sonar* language analyzers online
+    </div>
+
     <div id="link">
-        <a id="store" href="javascript:onStoreRequest()">Generate link</a>
         <a id="about" href="/about">About</a>
     </div>
 </div>
 
-<h2 id="languageSelect">
-    <span class="broad">Analyze your</span>
-    <span class="narrow">Analyze</span>
-    <select id="language" onchange="onLanguageChange()">
-        <option value="Java">Java</option><!-- java -->
-        <option value="JavaScript" selected="selected">JavaScript</option><!-- js -->
-        <option value="PHP">PHP</option><!-- php -->
-        <option value="Python">Python</option><!-- py -->
-    </select>
-    <span class="broad">code</span>
-</h2>
+<div id="languageSelect">
+    <div onclick="onLanguageClick('JavaScript')" id="JavaScript-btn" class="insta-button languageButton languageButton-selected">JavaScript</div>
+    <div onclick="onLanguageClick('Java')" id="Java-btn" class="insta-button languageButton">Java</div>
+    <div onclick="onLanguageClick('PHP')" id="PHP-btn" class="insta-button languageButton">PHP</div>
+    <div onclick="onLanguageClick('Python')" id="Python-btn" class="insta-button languageButton">Python</div>
+
+
+    <div onclick="onStoreRequest()" id="store" class="insta-button">Get link</div>
+</div>
 
 <textarea id="input" onchange="onInput()" oninput="onInput()" cols="80" rows="20" spellcheck="false">arr = [1, 2, 3];
 for (var x in arr) {
