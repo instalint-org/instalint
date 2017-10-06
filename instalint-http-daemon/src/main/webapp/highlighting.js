@@ -1,5 +1,5 @@
 
-// test cases: https://jsfiddle.net/p9vdzhtd/25/
+// test cases: https://jsfiddle.net/p9vdzhtd/27/
 function lineOffsets(code) {
     var offsets = [];
     var pos = 0;
@@ -42,8 +42,19 @@ function doFormat(response) {
         }
     });
 
+    response.errors.forEach(error => {
+        var start = offsets[error.line - 1] + error.lineOffset;
+        var endOfLine = offsets[error.line];
+        var end = offsets[error.line - 1] + error.lineOffset + 1;
+        issueStart[start] = 1;
+        issueEnd[end] = 1;
+        issueBoxes[endOfLine] = (issueBoxes[endOfLine] || []);
+        issueBoxes[endOfLine].push(error.message);
+    });
+
     var characterIndex;
     var result = "";
+    var c;
     for (characterIndex = 0; characterIndex <= code.length + 1; characterIndex++) {
         if (lineHighlightEnd[characterIndex]) {
             result += '</span>';
@@ -63,7 +74,12 @@ function doFormat(response) {
             result += '<span class="' + lineHighlightStart[characterIndex] + '">';
         }
         if (characterIndex < code.length) {
-            result += code[characterIndex];
+            c = code[characterIndex];
+            if ("<>".indexOf(c) != -1) {
+                result += '&#' + c.charCodeAt(0) + ';';
+            } else {
+                result += c;
+            }
         }
     }
 
