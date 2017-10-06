@@ -127,7 +127,7 @@
             justify-self: end;
             align-self: center;
             padding: 0 8px 4px 0;
-            margin: 0;
+            margin: 20px;
         }
 
         #motto {
@@ -187,6 +187,9 @@
         }
 
         .languageButton {
+        }
+
+        .insta-button {
             border: solid 2px #91d315;
             color: #91d315;
             font-size: 21px;
@@ -196,6 +199,11 @@
             margin-right: 15px;
             font-weight: 400;
             cursor: pointer
+        }
+
+        #store {
+            float: right;
+            margin-right: 0;
         }
 
         .languageButton-selected {
@@ -266,16 +274,18 @@
     </div>
 
     <div id="link">
-        <a id="store" href="javascript:onStoreRequest()">Generate link</a>
         <a id="about" href="/about">About</a>
     </div>
 </div>
 
 <div id="languageSelect">
-    <div onclick="onLanguageClick('JavaScript')" id="JavaScript-btn" class="languageButton languageButton-selected">JavaScript</div>
-    <div onclick="onLanguageClick('Java')" id="Java-btn" class="languageButton">Java</div>
-    <div onclick="onLanguageClick('PHP')" id="PHP-btn" class="languageButton">PHP</div>
-    <div onclick="onLanguageClick('Python')" id="Python-btn" class="languageButton">Python</div>
+    <div onclick="onLanguageClick('JavaScript')" id="JavaScript-btn" class="insta-button languageButton languageButton-selected">JavaScript</div>
+    <div onclick="onLanguageClick('Java')" id="Java-btn" class="insta-button languageButton">Java</div>
+    <div onclick="onLanguageClick('PHP')" id="PHP-btn" class="insta-button languageButton">PHP</div>
+    <div onclick="onLanguageClick('Python')" id="Python-btn" class="insta-button languageButton">Python</div>
+
+
+    <div onclick="onStoreRequest()" id="store" class="insta-button">Get link</div>
 </div>
 
 <textarea id="input" onchange="onInput()" oninput="onInput()" cols="80" rows="20" spellcheck="false">arr = [1, 2, 3];
