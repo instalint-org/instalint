@@ -1,5 +1,5 @@
 
-// test cases: https://jsfiddle.net/p9vdzhtd/25/
+// test cases: https://jsfiddle.net/p9vdzhtd/26/
 function lineOffsets(code) {
     var offsets = [];
     var pos = 0;
@@ -40,6 +40,16 @@ function doFormat(response) {
             issueBoxes[endOfLine] = (issueBoxes[endOfLine] || []);
             issueBoxes[endOfLine].push(issue.message);
         }
+    });
+
+    response.errors.forEach(error => {
+        var start = offsets[error.line - 1] + error.lineOffset;
+        var endOfLine = offsets[error.line];
+        var end = offsets[error.line - 1] + error.lineOffset + 1;
+        issueStart[start] = 1;
+        issueEnd[end] = 1;
+        issueBoxes[endOfLine] = (issueBoxes[endOfLine] || []);
+        issueBoxes[endOfLine].push(error.message);
     });
 
     var characterIndex;
