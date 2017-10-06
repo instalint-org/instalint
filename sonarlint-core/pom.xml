@@ -94,6 +94,12 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
+                  <groupId>org.sonarsource.java</groupId>
+                  <artifactId>sonar-java-plugin</artifactId>
+                  <version>${sonar-java-plugin.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.sonarsource.javascript</groupId>
                   <artifactId>sonar-javascript-plugin</artifactId>
                   <version>${sonar-javascript-plugin.version}</version>

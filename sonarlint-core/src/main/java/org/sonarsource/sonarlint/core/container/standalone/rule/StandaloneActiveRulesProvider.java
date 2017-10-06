@@ -125,7 +125,14 @@ public class StandaloneActiveRulesProvider {
           for (Param param : rule.params()) {
             newAr.setParam(param.key(), param.defaultValue());
           }
-          newAr.activate();
+          try {
+            // TODO the Java plugin tries to add some rules twice... (for example squid:S2093)
+            newAr.activate();
+          } catch (IllegalStateException e) {
+            if (!e.getMessage().contains("is already activated")) {
+              throw new IllegalStateException(e);
+            }
+          }
         }
       }
     }
