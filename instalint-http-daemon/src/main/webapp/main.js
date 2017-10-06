@@ -168,9 +168,9 @@ function analyze(store) {
     }
 }
 
-// test cases: https://jsfiddle.net/p9vdzhtd/14/
+// test cases: https://jsfiddle.net/p9vdzhtd/22/
 function lineOffsets(code) {
-	var offsets = [];
+    var offsets = [];
     var pos = 0;
     code.split("\n").forEach(line => {
         offsets.push(pos);
@@ -197,11 +197,18 @@ function doFormat(response) {
 
     var issueStart = [];
     var issueEnd = [];
-    response.issues.map(issue => issue.textRange).forEach(highlight => {
+    var issueBoxes = [];
+    response.issues.forEach(issue => {
+        var highlight = issue.textRange;
         var start = offsets[highlight.startLine - 1] + highlight.startOffset;
+        var endOfLine = offsets[highlight.startLine] - 1;
         var end = offsets[highlight.endLine - 1] + highlight.endOffset;
         issueStart[start] = 1;
         issueEnd[end] = 1;
+        if (issue.message) {
+            issueBoxes[endOfLine] = (issueBoxes[endOfLine] || []);
+            issueBoxes[endOfLine].push(issue.message);
+        }
     });
 
     var characterIndex;
@@ -218,6 +225,11 @@ function doFormat(response) {
         }
         if (lineHighlightStart[characterIndex]) {
             result += '<span class="' + lineHighlightStart[characterIndex] + '">';
+        }
+        if (issueBoxes[characterIndex]) {
+            issueBoxes[characterIndex].forEach(message => {
+                result += '\n<div class="issue">' + message + '</div>';
+            });
         }
         if (characterIndex < code.length) {
             result += code[characterIndex];
