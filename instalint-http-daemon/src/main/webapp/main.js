@@ -201,7 +201,7 @@ function doFormat(response) {
     response.issues.forEach(issue => {
         var highlight = issue.textRange;
         var start = offsets[highlight.startLine - 1] + highlight.startOffset;
-        var endOfLine = offsets[highlight.startLine] - 1;
+        var endOfLine = offsets[highlight.startLine];
         var end = offsets[highlight.endLine - 1] + highlight.endOffset;
         issueStart[start] = 1;
         issueEnd[end] = 1;
@@ -220,16 +220,16 @@ function doFormat(response) {
         if (issueEnd[characterIndex]) {
             result += '</span>';
         }
+        if (issueBoxes[characterIndex]) {
+            issueBoxes[characterIndex].forEach(message => {
+                result += '<div class="issue">' + message + '</div>';
+            });
+        }
         if (issueStart[characterIndex]) {
             result += '<span class="source-line-code-issue">';
         }
         if (lineHighlightStart[characterIndex]) {
             result += '<span class="' + lineHighlightStart[characterIndex] + '">';
-        }
-        if (issueBoxes[characterIndex]) {
-            issueBoxes[characterIndex].forEach(message => {
-                result += '\n<div class="issue">' + message + '</div>';
-            });
         }
         if (characterIndex < code.length) {
             result += code[characterIndex];
