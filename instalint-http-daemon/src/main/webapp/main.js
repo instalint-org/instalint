@@ -1,4 +1,25 @@
 
+let typingTimer;                //timer identifier
+const doneTypingInterval = 1000;  //time in ms
+var $input = $('#input');
+
+//on keyup, start the countdown
+$input.on('keyup', function () {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping, doneTypingInterval);
+});
+
+//on keydown, clear the countdown
+$input.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
+//user is "finished typing," do something
+function doneTyping () {
+  onInput();
+}
+
+
 let languageVersion = "latest";
 let storedAs = "";
 
@@ -90,7 +111,7 @@ function updateLocationHash() {
         }
     }
 
-    var newPath = "#/" + lgitanguage;
+    var newPath = "#/" + language;
     if (languageVersion != "latest") {
         newPath += "/" + languageVersion;
         if (storedAs != "") {
@@ -104,6 +125,7 @@ function updateLocationHash() {
 }
 
 function analyze(store) {
+    console.log("analyze");
     document.getElementById("result").style.opacity = 0.5;
     var loc = window.location;
     var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "") + "/" + loc.pathname.split('/')[1];
