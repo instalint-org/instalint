@@ -1,5 +1,5 @@
 
-// test cases: https://jsfiddle.net/p9vdzhtd/26/
+// test cases: https://jsfiddle.net/p9vdzhtd/27/
 function lineOffsets(code) {
     var offsets = [];
     var pos = 0;
@@ -54,6 +54,7 @@ function doFormat(response) {
 
     var characterIndex;
     var result = "";
+    var c;
     for (characterIndex = 0; characterIndex <= code.length + 1; characterIndex++) {
         if (lineHighlightEnd[characterIndex]) {
             result += '</span>';
@@ -73,7 +74,12 @@ function doFormat(response) {
             result += '<span class="' + lineHighlightStart[characterIndex] + '">';
         }
         if (characterIndex < code.length) {
-            result += code[characterIndex];
+            c = code[characterIndex];
+            if ("<>".indexOf(c) != -1) {
+                result += '&#' + c.charCodeAt(0) + ';';
+            } else {
+                result += c;
+            }
         }
     }
 
