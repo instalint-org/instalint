@@ -12,6 +12,10 @@
   <name>Instalint Http Daemon</name>
   <packaging>war</packaging>
 
+  <properties>
+    <sonar.exclusions>src/main/webapp/code-snippets/**/*</sonar.exclusions>
+  </properties>
+
   <build>
     <pluginManagement>
       <plugins>
