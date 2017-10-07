@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AnalyzerServlet extends HttpServlet {
 
-  private Backend backend;
+  private static Backend backend;
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
