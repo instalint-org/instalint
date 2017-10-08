@@ -18,13 +18,12 @@ public class SourceRepository {
   public void init(Path workDir) {
     if (storeDir == null) {
       storeDir = workDir.resolve("store");
+      LOGGER.info(() -> "storeDir: " + storeDir.toAbsolutePath());
       try {
         Files.createDirectories(storeDir);
       } catch (IOException e) {
-        e.printStackTrace();
-        throw new IllegalStateException("Cannot create store");
+        LOGGER.warning("Could not create store");
       }
-      LOGGER.info(() -> "storeDir: " + storeDir.toAbsolutePath());
     }
   }
 
@@ -33,9 +32,9 @@ public class SourceRepository {
     try {
       return new String(Files.readAllBytes(getFile(storedAs)), CHARSET);
     } catch (IOException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Cannot read file");
+      LOGGER.warning("Could not read code from store: " + storedAs);
     }
+    return "";
   }
 
   public String store(String code) {
@@ -43,23 +42,15 @@ public class SourceRepository {
     try {
       Files.write(getFile(storedAs), code.getBytes(CHARSET), StandardOpenOption.CREATE);
     } catch (IOException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Cannot write file");
+      LOGGER.warning("Could not write code to store: " + storedAs);
     }
     return storedAs;
   }
 
-  private Path getFile(String storedAs) {
-
+  private Path getFile(String storedAs) throws IOException {
     // avoid having too many files in one directory
     Path dir = storeDir.resolve(storedAs.substring(0, 2));
-
-    try {
-      Files.createDirectories(dir);
-    } catch (IOException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Cannot create store subdir");
-    }
+    Files.createDirectories(dir);
     return dir.resolve(storedAs);
   }
 }
