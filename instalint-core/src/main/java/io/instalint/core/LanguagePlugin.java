@@ -1,4 +1,4 @@
-package io.instalint.daemon;
+package io.instalint.core;
 
 import java.net.URL;
 

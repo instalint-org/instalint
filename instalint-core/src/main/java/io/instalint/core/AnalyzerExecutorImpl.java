@@ -17,7 +17,6 @@ import java.util.Set;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.error.AnalysisError;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
-import io.instalint.daemon.LanguagePlugin;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorImpl;

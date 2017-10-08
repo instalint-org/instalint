@@ -3,6 +3,7 @@ package io.instalint.daemon;
 import io.instalint.core.AnalyzerExecutor;
 import io.instalint.core.AnalyzerExecutorImpl;
 import io.instalint.core.AnalyzerResult;
+import io.instalint.core.LanguagePlugin;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

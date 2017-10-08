@@ -1,6 +1,7 @@
 package io.instalint.daemon;
 
 import io.instalint.core.InputFileExtensions;
+import io.instalint.core.LanguagePlugin;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
