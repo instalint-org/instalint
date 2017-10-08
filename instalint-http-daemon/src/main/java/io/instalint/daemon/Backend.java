@@ -1,5 +1,6 @@
 package io.instalint.daemon;
 
+import io.instalint.core.LanguagePlugin;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
