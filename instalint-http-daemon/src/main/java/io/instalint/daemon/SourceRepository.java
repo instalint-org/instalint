@@ -22,7 +22,7 @@ public class SourceRepository {
       try {
         Files.createDirectories(storeDir);
       } catch (IOException e) {
-        LOGGER.warning("Could not create store");
+        throw new StorageException("Could not create storage directory: " + storeDir.toAbsolutePath());
       }
     }
   }
@@ -32,9 +32,8 @@ public class SourceRepository {
     try {
       return new String(Files.readAllBytes(getFile(storedAs)), CHARSET);
     } catch (IOException e) {
-      LOGGER.warning("Could not read code from store: " + storedAs);
+      throw new StorageException("Could not read code from store: " + storedAs);
     }
-    return "";
   }
 
   public String store(String code) {
@@ -42,7 +41,7 @@ public class SourceRepository {
     try {
       Files.write(getFile(storedAs), code.getBytes(CHARSET), StandardOpenOption.CREATE);
     } catch (IOException e) {
-      LOGGER.warning("Could not write code to store: " + storedAs);
+      throw new StorageException("Could not write code to store: " + storedAs);
     }
     return storedAs;
   }
