@@ -145,8 +145,6 @@ window.onclick = function(event) {
 }
 
 function addJavaScriptExamples() {
-    const examplesDropdown = document.getElementById("myDropdown");
-    examplesDropdown.innerHTML = "";
     const jsExamples = [
         "exS1764.example.js",
         "exS2583.example.js",
@@ -158,22 +156,19 @@ function addJavaScriptExamples() {
         "exS2259.example.js",
         "exS3923.example.js"
     ];
-
-    jsExamples.forEach((element, index) => {
-        examplesDropdown.appendChild(createExample("#/JavaScript/3.2.0/" + element, index + 1));
-    });
+    addLanguageExamples(jsExamples, "JavaScript");
 }
 
 function addJavaExamples() {
-    addLanguageExamples(["ex.example1.java", "ex.example2.java"], "Java", "4.14.0");
+    addLanguageExamples(["ex.example1.java", "ex.example2.java"], "Java");
 }
 
 function addPythonExamples() {
-    addLanguageExamples(["ex.example1.py", "ex.example2.py"], "Python", "1.8.0");
+    addLanguageExamples(["ex.example1.py", "ex.example2.py"], "Python");
 }
 
 function addPhpExamples() {
-    addLanguageExamples(["ex.example1.php", "ex.example2.php"], "PHP", "2.10.0");
+    addLanguageExamples(["ex.example1.php", "ex.example2.php"], "PHP");
 }
 
 function addLanguageExamples(exampleLinks, language, version) {
@@ -181,7 +176,7 @@ function addLanguageExamples(exampleLinks, language, version) {
     examplesDropdown.innerHTML = "";
 
     exampleLinks.forEach((element, index) => {
-        examplesDropdown.appendChild(createExample("#/" + language + "/" + version + "/" + element, index + 1));
+        examplesDropdown.appendChild(createExample("#/" + language + "/latest/" + element, index + 1));
     });
 }
 
@@ -197,7 +192,7 @@ function updateLocationHash(store) {
     var language = languageSelected.innerHTML;
 
     var newPath = "#/" + language;
-    if (languageVersion != "latest") {
+    if (languageVersion != "latest" || storedAs != "") {
         newPath += "/" + languageVersion;
         if (storedAs != "") {
             newPath += "/" + storedAs;
