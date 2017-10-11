@@ -47,7 +47,7 @@ jars() {
     local plugin=$1
     local url=$baseurl/$plugin
     diag fetching jar list from $url ...
-    curl -sL "$url" | grep 'href=.*jar"' | cut -d'"' -f2
+    curl -sL "$url" | grep "href=\"$plugin-.*jar\"" | cut -d'"' -f2
 }
 
 latest_jar() {
@@ -85,7 +85,7 @@ generate_settings_properties() {
     for analyzer in "${analyzers[@]}"; do
         plugin=sonar-$analyzer-plugin
 
-        ls "$pluginsdir" | while read jar; do
+        ls "$pluginsdir" | grep "$plugin" | while read jar; do
             version=$(echo "$jar" | version)
             echo "$analyzer.plugin.$version = $jar"
 
