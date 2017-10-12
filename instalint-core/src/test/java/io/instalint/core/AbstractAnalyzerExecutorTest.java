@@ -73,6 +73,12 @@ public abstract class AbstractAnalyzerExecutorTest {
     AnalyzerResult result = execute(invalidExampleCode() + validExampleCode());
     assertThat(result.success()).isFalse();
     assertThat(result.errors()).isNotEmpty();
+    assertThat(result.errors().get(0).message()).isNotNull();
+    // TODO let implementations return expected location of first parsing error
+    //assertThat(result.errors().get(0).location()).isNotNull();
+    //assertThat(result.errors().get(0).location().line()).isGreaterThanOrEqualTo(1);
+    //assertThat(result.errors().get(0).location().lineOffset()).isGreaterThanOrEqualTo(0);
+
     assertThat(result.issues()).isEmpty();
     assertThat(result.highlightings()).isEmpty();
     assertThat(result.symbolRefs()).isEmpty();

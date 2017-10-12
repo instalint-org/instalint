@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.sonar.api.batch.fs.TextPointer;
@@ -21,6 +23,8 @@ public class ResponseMessage {
   private final String storedAs;
   private final String code;
   private final AnalyzerResult analyzerResult;
+
+  private final Pattern parseErrorPattern = Pattern.compile("^Parse error at line (\\d+) column (\\d+):.*", Pattern.DOTALL);
 
   public ResponseMessage(String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
     this.languageVersion = languageVersion;
@@ -145,12 +149,20 @@ public class ResponseMessage {
     json.name("errors");
     json.beginArray();
     analyzerResult.errors().forEach(error -> {
-      json.beginObject().prop("message", error.message());
+      String message = error.message();
+      json.beginObject().prop("message", message);
       TextPointer location = error.location();
       if (location != null) {
         json
           .prop("line", location.line())
           .prop("lineOffset", location.lineOffset());
+      } else if (message != null) {
+        Matcher matcher = parseErrorPattern.matcher(message);
+        if (matcher.matches()) {
+          json
+            .prop("line", Integer.parseInt(matcher.group(1)))
+            .prop("lineOffset", Integer.parseInt(matcher.group(2)) - 1);
+        }
       }
       json.endObject();
     });
