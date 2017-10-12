@@ -48,6 +48,7 @@ public abstract class AbstractAnalyzerExecutorTest {
   public void should_report_issues() {
     AnalyzerResult result = execute(validExampleCode());
     assertThat(result.success()).isTrue();
+    assertThat(result.errors()).isEmpty();
     assertThat(result.issues()).hasSize(issueCount());
   }
 
@@ -55,6 +56,7 @@ public abstract class AbstractAnalyzerExecutorTest {
   public void should_report_highlightings() {
     AnalyzerResult result = execute(validExampleCode());
     assertThat(result.success()).isTrue();
+    assertThat(result.errors()).isEmpty();
     assertThat(result.highlightings()).hasSize(highlightingCount());
   }
 
@@ -62,6 +64,7 @@ public abstract class AbstractAnalyzerExecutorTest {
   public void should_report_symbol_refs() {
     AnalyzerResult result = execute(validExampleCode());
     assertThat(result.success()).isTrue();
+    assertThat(result.errors()).isEmpty();
     assertThat(result.symbolRefs()).hasSize(symbolRefCount());
   }
 
@@ -69,6 +72,7 @@ public abstract class AbstractAnalyzerExecutorTest {
   public void should_report_analysis_failed() {
     AnalyzerResult result = execute(invalidExampleCode() + validExampleCode());
     assertThat(result.success()).isFalse();
+    assertThat(result.errors()).isNotEmpty();
     assertThat(result.issues()).isEmpty();
     assertThat(result.highlightings()).isEmpty();
     assertThat(result.symbolRefs()).isEmpty();
