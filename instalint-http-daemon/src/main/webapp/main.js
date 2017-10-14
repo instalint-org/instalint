@@ -29,30 +29,11 @@ function onLanguageChange() {
     analyze(false);
 }
 
-var lastProcessedInput = new Date().getTime();
-var timer;
+var onTheFlyAnalysisTimeout;
 
 function onInput() {
-    var now = new Date().getTime();
-    var executionDelay = lastProcessedInput + doneTypingInterval - now;
-    lastProcessedInput = new Date().getTime();
-    if (executionDelay < 0) {
-        onInitAndNotTooOften();
-    } else {
-        if (timer) {
-            clearTimeout(timer);
-        }
-        timer = setTimeout(onInitAndNotTooOften, executionDelay);
-    }
-}
-
-function onInitAndNotTooOften() {
-    if (timer) {
-        clearTimeout(timer);
-    }
-    lastProcessedInput = new Date().getTime();
-    storedAs = "";
-    analyze(false);
+    clearTimeout(onTheFlyAnalysisTimeout);
+    onTheFlyAnalysisTimeout = setTimeout(() => analyze(false), doneTypingInterval);
 }
 
 function onStoreRequest() {
@@ -208,6 +189,9 @@ function updateLocationHash(store) {
 }
 
 function analyze(store) {
+    if (!store) {
+        storedAs = "";
+    }
     console.log("analyze");
     document.getElementById("output").style.opacity = 0.5;
     var loc = window.location;
