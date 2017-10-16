@@ -3,6 +3,10 @@ const doneTypingInterval = 1000;  //time in ms
 let languageVersion = "latest";
 let storedAs = "";
 
+let onTheFlyAnalysisTimeout;
+let lastCodeLength = 0;
+const minLengthDifferenceToSkipTimeout = 5;
+
 let languageExampleFunctions = {
     "JavaScript": addJavaScriptExamples,
     "Java": addJavaExamples,
@@ -15,6 +19,8 @@ function onInit() {
     updateLocationHash();
     window.onhashchange = onLocationHashChange;
     setNewLanguage(getCurrentLanguage());
+
+    lastCodeLength = getCode().length;
     analyze(false);
 }
 
@@ -29,11 +35,16 @@ function onLanguageChange() {
     analyze(false);
 }
 
-var onTheFlyAnalysisTimeout;
-
 function onInput() {
     clearTimeout(onTheFlyAnalysisTimeout);
-    onTheFlyAnalysisTimeout = setTimeout(() => analyze(false), doneTypingInterval);
+
+    var code = getCode();
+    if (Math.abs(code.length - lastCodeLength) > minLengthDifferenceToSkipTimeout) {
+        analyze(false);
+    } else {
+        onTheFlyAnalysisTimeout = setTimeout(() => analyze(false), doneTypingInterval);
+    }
+    lastCodeLength = code.length;
 }
 
 function onStoreRequest() {
@@ -188,6 +199,14 @@ function updateLocationHash(store) {
     }
 }
 
+function getCode() {
+    return document.getElementById("input").value;
+}
+
+function setCode(code) {
+    document.getElementById("input").value = code;
+}
+
 function analyze(store) {
     if (!store) {
         storedAs = "";
@@ -216,7 +235,7 @@ function analyze(store) {
         document.getElementById("output").style.opacity = 1;
 
         if (storedAs != "" || store) {
-            document.getElementById("input").value = response.code;
+            setCode(response.code);
             if (response.storedAs) {
                 storedAs = response.storedAs;
                 languageVersion = response.languageVersion;
@@ -228,7 +247,7 @@ function analyze(store) {
     }
 
     var language = getCurrentLanguage();
-    var code = document.getElementById("input").value;
+    var code = getCode();
 
     if (code === "" && storedAs === "") {
         document.getElementById("output").innerHTML = '';
