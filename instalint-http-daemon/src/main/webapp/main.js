@@ -184,14 +184,14 @@ function updateLocationHash(store) {
     var language = languageSelected.innerHTML;
 
     var newPath = "#/" + language;
-    if (languageVersion != "latest" || storedAs != "") {
+    if (languageVersion !== "latest" || storedAs !== "") {
         newPath += "/" + languageVersion;
-        if (storedAs != "") {
+        if (storedAs !== "") {
             newPath += "/" + storedAs;
         }
     }
 
-    if (document.location.hash != newPath) {
+    if (document.location.hash !== newPath) {
         document.location.hash = newPath;
     }
     if (store) {
@@ -234,7 +234,7 @@ function analyze(store) {
         }
         document.getElementById("output").style.opacity = 1;
 
-        if (storedAs != "" || store) {
+        if (storedAs !== "" || store) {
             setCode(response.code);
             if (response.storedAs) {
                 storedAs = response.storedAs;
@@ -255,10 +255,10 @@ function analyze(store) {
         request.open(method, url, async);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         var params = "language=" + encodeURIComponent(language) + "&languageVersion=" + encodeURIComponent(languageVersion);
-        if (storedAs != "") {
+        if (storedAs !== "") {
             params += "&restore=" + storedAs;
         } else {
-            if (store == true) {
+            if (store) {
                 params += "&store=true";
             }
             params += "&code=" + encodeURIComponent(code);
