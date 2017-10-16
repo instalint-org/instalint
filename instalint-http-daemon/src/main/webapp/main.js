@@ -247,7 +247,7 @@ function analyze(store) {
     var code = document.getElementById("input").value;
 
     if (code === "" && storedAs === "") {
-        document.getElementById("output").innerHTML = newContent;
+        document.getElementById("output").innerHTML = '';
     } else {
         request.open(method, url, async);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
