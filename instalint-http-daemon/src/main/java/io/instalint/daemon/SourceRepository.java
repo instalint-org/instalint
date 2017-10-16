@@ -10,12 +10,13 @@ import java.util.logging.Logger;
 
 public class SourceRepository {
 
-  public static final Charset CHARSET = StandardCharsets.UTF_8;
-  public static final Logger LOGGER = Logger.getLogger(SourceRepository.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(SourceRepository.class.getName());
+
+  private static final Charset CHARSET = StandardCharsets.UTF_8;
 
   private Path storeDir;
 
-  public void init(Path workDir) {
+  void init(Path workDir) {
     if (storeDir == null) {
       storeDir = workDir.resolve("store");
       LOGGER.info(() -> "storeDir: " + storeDir.toAbsolutePath());
@@ -27,7 +28,7 @@ public class SourceRepository {
     }
   }
 
-  public String load(String storedAs) {
+  String load(String storedAs) {
     RandomString.validate(storedAs);
     try {
       return new String(Files.readAllBytes(getFile(storedAs)), CHARSET);
@@ -36,7 +37,7 @@ public class SourceRepository {
     }
   }
 
-  public String store(String code) {
+  String store(String code) {
     String storedAs = RandomString.generate();
     try {
       Files.write(getFile(storedAs), code.getBytes(CHARSET), StandardOpenOption.CREATE);
