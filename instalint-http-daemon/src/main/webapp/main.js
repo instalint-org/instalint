@@ -216,11 +216,19 @@ function analyze(store) {
     var method = "POST";
     var async = true;
     var request = new XMLHttpRequest();
+    request.onerror = function () {
+        document.getElementById("output").innerHTML = '<div class="issue">Connection problem</div>';
+        document.getElementById("output").style.opacity = 1;
+    };
     request.onload = function () {
 
         var response = JSON.parse(request.responseText);
 
-        document.getElementById("output").innerHTML = doFormat(response);
+        if (response.exception) {
+            document.getElementById("output").innerHTML = '<div class="issue">Internal server error</div>';
+        } else {
+            document.getElementById("output").innerHTML = doFormat(response);
+        }
         document.getElementById("output").style.opacity = 1;
 
         if (storedAs != "" || store) {
