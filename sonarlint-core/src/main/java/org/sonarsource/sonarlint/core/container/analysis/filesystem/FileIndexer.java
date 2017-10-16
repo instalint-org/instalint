@@ -25,7 +25,6 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 
 /**
@@ -38,15 +37,12 @@ public class FileIndexer {
 
   private final InputFileBuilder inputFileBuilder;
   private final StandaloneAnalysisConfiguration analysisConfiguration;
-  private final FileIndexerListener fileIndexerListener;
 
   private final Set<SonarLintInputFile> indexed = new HashSet<SonarLintInputFile>();
 
-  public FileIndexer(InputFileBuilder inputFileBuilder, StandaloneAnalysisConfiguration analysisConfiguration,
-    FileIndexerListener fileIndexerListener) {
+  public FileIndexer(InputFileBuilder inputFileBuilder, StandaloneAnalysisConfiguration analysisConfiguration) {
     this.inputFileBuilder = inputFileBuilder;
     this.analysisConfiguration = analysisConfiguration;
-    this.fileIndexerListener = fileIndexerListener;
   }
 
   void index(SonarLintFileSystem fileSystem) {
@@ -77,6 +73,5 @@ public class FileIndexer {
       LOG.debug("Setting filesystem encoding: " + inputFile.charset());
       fs.setEncoding(inputFile.charset());
     }
-    fileIndexerListener.indexed(inputFile.file());
   }
 }

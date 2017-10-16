@@ -1,7 +1,6 @@
 package io.instalint.core;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -22,7 +21,6 @@ import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorImpl;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Highlighting;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
@@ -123,27 +121,12 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     List<AnalysisError> errors = new ArrayList<>();
     AnalysisErrorsListener analysisErrorsListener = (message, location) -> errors.add(new AnalysisErrorImpl(message, location));
 
-    FileIndexerListener fileIndexerListener = new FileIndexerListener() {
-      int count = 0;
-
-      @Override
-      public void indexed(File file) {
-        count++;
-      }
-
-      @Override
-      public int count() {
-        return count;
-      }
-    };
-
     engine.analyze(
       config,
       issueListener,
       highlightingListener,
       symbolRefsListener,
       analysisErrorsListener,
-      fileIndexerListener,
       logOutput);
 
     return new AnalyzerResult() {

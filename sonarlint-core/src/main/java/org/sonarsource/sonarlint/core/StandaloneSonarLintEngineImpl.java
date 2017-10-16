@@ -24,7 +24,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -69,14 +68,13 @@ public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintE
     HighlightingListener highlightingListener,
     SymbolRefsListener symbolRefsListener,
     AnalysisErrorsListener analysisErrorsListener,
-    FileIndexerListener fileIndexerListener,
     @Nullable LogOutput logOutput) {
     checkNotNull(configuration);
     checkNotNull(issueListener);
     setLogging(logOutput);
     rwl.readLock().lock();
     try {
-      globalContainer.analyze(configuration, issueListener, highlightingListener, symbolRefsListener, analysisErrorsListener, fileIndexerListener);
+      globalContainer.analyze(configuration, issueListener, highlightingListener, symbolRefsListener, analysisErrorsListener);
     } catch (RuntimeException e) {
       throw SonarLintWrappedException.wrap(e);
     } finally {
