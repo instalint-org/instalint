@@ -19,43 +19,22 @@
  */
 package io.instalint.core;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 public class AnalyzerId {
 
   private final String language;
   private final String languageVersion;
 
-  public AnalyzerId(String language, String languageVersion) {
+  private AnalyzerId(String language, String languageVersion) {
     this.language = language;
     this.languageVersion = languageVersion;
   }
 
   public static AnalyzerId of(String language, String languageVersion) {
     return new AnalyzerId(language, languageVersion);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    AnalyzerId that = (AnalyzerId) o;
-
-    if (language != null ? !language.equals(that.language) : that.language != null) return false;
-    return languageVersion != null ? languageVersion.equals(that.languageVersion) : that.languageVersion == null;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = language != null ? language.hashCode() : 0;
-    result = 31 * result + (languageVersion != null ? languageVersion.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "AnalyzerId{" +
-      "language='" + language + '\'' +
-      ", languageVersion='" + languageVersion + '\'' +
-      '}';
   }
 }
