@@ -22,7 +22,6 @@ package org.sonarsource.sonarlint.core.client.api.standalone;
 import javax.annotation.Nullable;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -40,7 +39,6 @@ public interface StandaloneSonarLintEngine {
     HighlightingListener highlightingListener,
     SymbolRefsListener symbolRefsListener,
     AnalysisErrorsListener analysisErrorsListener,
-    FileIndexerListener fileIndexerListener,
     @Nullable LogOutput logOutput);
 
 }

@@ -31,7 +31,6 @@ import org.sonar.api.utils.UriReader;
 import org.sonar.api.utils.Version;
 import org.sonarsource.sonarlint.core.analyzer.sensor.NewSensorsExecutor;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisErrorsListener;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.FileIndexerListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.HighlightingListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.SymbolRefsListener;
@@ -107,15 +106,13 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     IssueListener issueListener,
     HighlightingListener highlightingListener,
     SymbolRefsListener symbolRefsListener,
-    AnalysisErrorsListener analysisErrorsListener,
-    FileIndexerListener fileIndexerListener) {
+    AnalysisErrorsListener analysisErrorsListener) {
     AnalysisContainer analysisContainer = new AnalysisContainer(this);
     analysisContainer.add(configuration);
     analysisContainer.add(issueListener);
     analysisContainer.add(highlightingListener);
     analysisContainer.add(symbolRefsListener);
     analysisContainer.add(analysisErrorsListener);
-    analysisContainer.add(fileIndexerListener);
     analysisContainer.add(rules);
     analysisContainer.add(activeRules);
     analysisContainer.add(NewSensorsExecutor.class);
