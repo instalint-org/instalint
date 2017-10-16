@@ -94,18 +94,24 @@ class ResponseMessage {
     }
   }
 
+  private void appendRange(JsonWriter json, TextRange range) {
+    TextPointer start = range.start();
+    TextPointer end = range.end();
+    json.prop("startLine", start.line())
+      .prop("endLine", end.line())
+      .prop("startOffset", start.lineOffset())
+      .prop("endOffset", end.lineOffset());
+  }
+
   private void writeHighlightings(JsonWriter json) {
     json.name("highlightings");
     json.beginArray();
     for (Highlighting highlighting : analyzerResult.highlightings()) {
       json.beginObject()
         .prop("type", highlighting.type().name())
-        .prop("cssClass", highlighting.type().cssClass())
-        .prop("startLine", highlighting.textRange().start().line())
-        .prop("endLine", highlighting.textRange().end().line())
-        .prop("startOffset", highlighting.textRange().start().lineOffset())
-        .prop("endOffset", highlighting.textRange().end().lineOffset())
-        .endObject();
+        .prop("cssClass", highlighting.type().cssClass());
+      appendRange(json, highlighting.textRange());
+      json.endObject();
     }
     json.endArray();
   }
@@ -117,24 +123,17 @@ class ResponseMessage {
       json.beginObject();
       {
         {
-          TextRange range = entry.getKey();
           json.name("symbol")
-            .beginObject()
-            .prop("startLine", range.start().line())
-            .prop("endLine", range.end().line())
-            .prop("startOffset", range.start().lineOffset())
-            .prop("endOffset", range.end().lineOffset())
-            .endObject();
+            .beginObject();
+          appendRange(json, entry.getKey());
+          json.endObject();
         }
 
         json.name("locations").beginArray();
         for (TextRange range : entry.getValue()) {
-          json.beginObject()
-            .prop("startLine", range.start().line())
-            .prop("endLine", range.end().line())
-            .prop("startOffset", range.start().lineOffset())
-            .prop("endOffset", range.end().lineOffset())
-            .endObject();
+          json.beginObject();
+          appendRange(json, range);
+          json.endObject();
         }
         json.endArray();
       }
