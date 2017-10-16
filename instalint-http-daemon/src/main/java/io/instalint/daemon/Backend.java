@@ -1,6 +1,9 @@
 package io.instalint.daemon;
 
+import io.instalint.core.Analyzer;
+import io.instalint.core.AnalyzerId;
 import io.instalint.core.LanguagePlugin;
+import io.instalint.core.LanguagePluginRepository;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
