@@ -32,19 +32,22 @@ class Backend {
     }
 
     if (properties == null) {
-      Path propertyFile = workDir.resolve("settings.properties");
-      if (!propertyFile.toFile().exists()) {
-        LOGGER.severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
-        throw new IllegalStateException("Property file not found");
+      Path settingsFile = workDir.resolve("settings.properties");
+      if (!settingsFile.toFile().exists()) {
+        String message = "Settings file not found: " + settingsFile.toAbsolutePath();
+        LOGGER.severe(() -> message);
+        throw new IllegalStateException(message);
       }
-      Properties properties = new Properties();
+
+      Properties settings = new Properties();
       try {
-        properties.load(new FileInputStream(propertyFile.toFile()));
+        settings.load(new FileInputStream(settingsFile.toFile()));
       } catch (IOException e) {
-        LOGGER.severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
-        throw new IllegalStateException("Property file not found");
+        String message = "Error while reading settings file: " + settingsFile.toAbsolutePath();
+        LOGGER.severe(() -> message);
+        throw new IllegalStateException(message);
       }
-      this.properties = properties;
+      this.properties = settings;
     }
 
     if (languagePluginRepository == null) {
