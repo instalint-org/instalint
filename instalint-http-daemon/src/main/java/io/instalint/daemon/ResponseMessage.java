@@ -44,7 +44,6 @@ class ResponseMessage {
       writeHighlightings(json);
       writeSymbolRefs(json);
       writeErrors(json);
-      writeSuccess(json);
       json.endObject();
     }
     resp.setStatus(200);
@@ -156,11 +155,5 @@ class ResponseMessage {
         .endObject();
     });
     json.endArray();
-  }
-
-  // success == errors.isEmpty
-  @Deprecated
-  private void writeSuccess(JsonWriter json) {
-    json.prop("success", analyzerResult.success());
   }
 }
