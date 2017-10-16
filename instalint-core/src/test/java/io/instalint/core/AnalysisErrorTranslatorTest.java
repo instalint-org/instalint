@@ -1,5 +1,7 @@
 package io.instalint.core;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
@@ -10,7 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class AnalysisErrorTranslatorTest {
+
   private final AnalysisErrorTranslator translator = new AnalysisErrorTranslator();
+
+  @Test
+  public void should_do_nothing_if_message_is_null() {
+    AnalysisError notParseError = newAnalysisError(null, mock(TextPointer.class));
+    assertThat(translator.translate(notParseError)).isEqualTo(notParseError);
+  }
 
   @Test
   public void should_do_nothing_if_not_parse_error() {
@@ -35,7 +44,7 @@ public class AnalysisErrorTranslatorTest {
     assertThat(location.lineOffset()).isEqualTo(expected.location().lineOffset());
   }
 
-  AnalysisError newAnalysisError(String message, TextPointer location) {
+  private AnalysisError newAnalysisError(@Nullable String message, TextPointer location) {
     return new AnalysisError() {
       @Override
       public InputFile inputFile() {
@@ -43,6 +52,7 @@ public class AnalysisErrorTranslatorTest {
         return null;
       }
 
+      @CheckForNull
       @Override
       public String message() {
         return message;
