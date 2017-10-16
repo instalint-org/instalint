@@ -1,5 +1,6 @@
 package io.instalint.daemon;
 
+import io.instalint.core.AnalysisErrorTranslator;
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -15,21 +16,23 @@ import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ResponseMessage {
+class ResponseMessage {
 
   private final String languageVersion;
   private final String storedAs;
   private final String code;
   private final AnalyzerResult analyzerResult;
 
-  public ResponseMessage(String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
+  private final AnalysisErrorTranslator analysisErrorTranslator = new AnalysisErrorTranslator();
+
+  ResponseMessage(String languageVersion, String storedAs, String code, AnalyzerResult analyzerResult) {
     this.languageVersion = languageVersion;
     this.storedAs = storedAs;
     this.code = code;
     this.analyzerResult = analyzerResult;
   }
 
-  public void writeTo(HttpServletResponse resp) throws IOException {
+  void writeTo(HttpServletResponse resp) throws IOException {
     try (ServletOutputStream outputStream = resp.getOutputStream();
       OutputStreamWriter writer = new OutputStreamWriter(outputStream, UTF_8);
       JsonWriter json = JsonWriter.of(writer)) {
@@ -144,15 +147,13 @@ public class ResponseMessage {
   private void writeErrors(JsonWriter json) {
     json.name("errors");
     json.beginArray();
-    analyzerResult.errors().forEach(error -> {
-      json.beginObject().prop("message", error.message());
+    analyzerResult.errors().stream().map(analysisErrorTranslator::translate).forEach(error -> {
       TextPointer location = error.location();
-      if (location != null) {
-        json
-          .prop("line", location.line())
-          .prop("lineOffset", location.lineOffset());
-      }
-      json.endObject();
+      json
+        .beginObject().prop("message", error.message())
+        .prop("line", location.line())
+        .prop("lineOffset", location.lineOffset())
+        .endObject();
     });
     json.endArray();
   }
