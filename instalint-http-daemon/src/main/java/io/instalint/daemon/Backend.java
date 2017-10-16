@@ -6,7 +6,6 @@ import io.instalint.core.LanguagePlugin;
 import io.instalint.core.LanguagePluginRepository;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
