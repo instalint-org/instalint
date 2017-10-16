@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -15,6 +17,7 @@ public class Backend {
   private Properties properties;
   private SourceRepository sourceRepository;
   private LanguagePluginRepository languagePluginRepository;
+  private Map<AnalyzerId, Analyzer> analyzerRepository = new HashMap<>();
 
   private void init() {
     if (workDir == null) {
@@ -50,9 +53,16 @@ public class Backend {
     }
   }
 
-  public LanguagePlugin retrieve(String language, String languageVersion) {
-    init();
-    return languagePluginRepository.retrieve(language, languageVersion, properties);
+  public Analyzer retrieve(String language, String languageVersion) {
+    AnalyzerId id = AnalyzerId.of(language, languageVersion);
+    Analyzer analyzer = analyzerRepository.get(id);
+    if (analyzer == null) {
+      init();
+      LanguagePlugin languagePlugin = languagePluginRepository.retrieve(language, languageVersion, properties);
+      analyzer = new Analyzer(languagePlugin);
+      analyzerRepository.put(id, analyzer);
+    }
+    return analyzer;
   }
 
   public String load(String uuid) {
