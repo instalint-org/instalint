@@ -13,6 +13,8 @@ import org.sonar.api.web.ServletFilter;
 
 public class ExceptionFilter extends ServletFilter {
 
+  private static final Logger LOGGER = Logger.getLogger(ExceptionFilter.class.getName());
+
   public void init(FilterConfig config) throws ServletException {
     // no action required
   }
@@ -21,7 +23,7 @@ public class ExceptionFilter extends ServletFilter {
     try {
       chain.doFilter(request, response);
     } catch (Exception e) {
-      Logger.getLogger(ExceptionFilter.class.getName()).log(Level.WARNING, "Servlet threw exception", e);
+      LOGGER.log(Level.WARNING, "Servlet threw exception", e);
       if (!response.isCommitted() && response instanceof HttpServletResponse) {
         ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getWriter().write("{\"exception\": true}");
