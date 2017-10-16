@@ -1,7 +1,5 @@
-package io.instalint.daemon;
+package io.instalint.core;
 
-import io.instalint.core.InputFileExtensions;
-import io.instalint.core.LanguagePlugin;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -11,12 +9,14 @@ import java.util.logging.Logger;
 
 public class LanguagePluginRepository {
 
+  private static final Logger LOGGER = Logger.getLogger(LanguagePluginRepository.class.getName());
+
   private Path pluginDir;
 
   public void init(Path workDir) {
     if (pluginDir == null) {
       pluginDir = workDir.resolve("plugins");
-      Logger.getLogger(Backend.class.getName()).warning(() -> "pluginDir: " + pluginDir.toAbsolutePath());
+      LOGGER.warning(() -> "pluginDir: " + pluginDir.toAbsolutePath());
     }
   }
 

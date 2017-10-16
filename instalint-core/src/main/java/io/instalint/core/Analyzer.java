@@ -17,12 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package io.instalint.daemon;
-
-import io.instalint.core.AnalyzerExecutor;
-import io.instalint.core.AnalyzerExecutorImpl;
-import io.instalint.core.AnalyzerResult;
-import io.instalint.core.LanguagePlugin;
+package io.instalint.core;
 
 public class Analyzer {
 

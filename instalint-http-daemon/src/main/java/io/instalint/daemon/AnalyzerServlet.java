@@ -1,5 +1,6 @@
 package io.instalint.daemon;
 
+import io.instalint.core.Analyzer;
 import io.instalint.core.AnalyzerResult;
 import java.io.IOException;
 import javax.servlet.ServletException;
