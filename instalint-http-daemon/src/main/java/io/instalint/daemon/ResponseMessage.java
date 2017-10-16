@@ -121,22 +121,19 @@ class ResponseMessage {
     json.beginArray();
     for (Map.Entry<TextRange, Set<TextRange>> entry : analyzerResult.symbolRefs().entrySet()) {
       json.beginObject();
-      {
-        {
-          json.name("symbol")
-            .beginObject();
-          appendRange(json, entry.getKey());
-          json.endObject();
-        }
 
-        json.name("locations").beginArray();
-        for (TextRange range : entry.getValue()) {
-          json.beginObject();
-          appendRange(json, range);
-          json.endObject();
-        }
-        json.endArray();
+      json.name("symbol").beginObject();
+      appendRange(json, entry.getKey());
+      json.endObject();
+
+      json.name("locations").beginArray();
+      for (TextRange range : entry.getValue()) {
+        json.beginObject();
+        appendRange(json, range);
+        json.endObject();
       }
+      json.endArray();
+
       json.endObject();
     }
     json.endArray();
