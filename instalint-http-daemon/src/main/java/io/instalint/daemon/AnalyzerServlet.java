@@ -1,9 +1,6 @@
 package io.instalint.daemon;
 
-import io.instalint.core.AnalyzerExecutor;
-import io.instalint.core.AnalyzerExecutorImpl;
 import io.instalint.core.AnalyzerResult;
-import io.instalint.core.LanguagePlugin;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,16 +30,15 @@ public class AnalyzerServlet extends HttpServlet {
 
     String languageParam = getLanguage(req);
     String languageVersionParam = getLanguageVersion(req);
-    LanguagePlugin languagePlugin = backend.retrieve(languageParam, languageVersionParam);
+    Analyzer analyzer = backend.retrieve(languageParam, languageVersionParam);
 
     if ("true".equals(req.getParameter("store"))) {
       storedAs = backend.store(code);
     }
 
-    AnalyzerExecutor executor = new AnalyzerExecutorImpl();
-    AnalyzerResult result = executor.execute(languagePlugin, code);
+    AnalyzerResult result = analyzer.apply(code);
 
-    new ResponseMessage(languagePlugin.getLanguageVersion(), storedAs, code, result).writeTo(resp);
+    new ResponseMessage(analyzer.getLanguageVersion(), storedAs, code, result).writeTo(resp);
   }
 
   private String getLanguageVersion(HttpServletRequest req) {
