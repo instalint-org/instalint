@@ -31,6 +31,7 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConf
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 
 public class AnalyzerExecutorImpl implements AnalyzerExecutor {
+
   private static Path newDir(Path path) throws IOException {
     return Files.createDirectories(path);
   }
@@ -50,7 +51,6 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     try {
       tmp = newTempDir();
     } catch (IOException e) {
-      e.printStackTrace();
       throw new IllegalStateException("Could not create temp dir");
     }
 
@@ -58,7 +58,6 @@ public class AnalyzerExecutorImpl implements AnalyzerExecutor {
     try {
       workDir = newDir(tmp.resolve("work"));
     } catch (IOException e) {
-      e.printStackTrace();
       throw new IllegalStateException("Could not create workdir");
     }
 
