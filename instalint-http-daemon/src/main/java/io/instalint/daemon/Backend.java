@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class Backend {
+class Backend {
+
+  private static final Logger LOGGER = Logger.getLogger(Backend.class.getName());
 
   private Path workDir;
   private Properties properties;
@@ -26,20 +28,20 @@ public class Backend {
     if (workDir == null) {
       String catalinaBase = System.getProperty("catalina.base");
       workDir = Paths.get(catalinaBase, "work", "Catalina", "localhost", "ROOT");
-      Logger.getLogger(Backend.class.getName()).warning(() -> "workDir: " + workDir.toAbsolutePath());
+      LOGGER.warning(() -> "workDir: " + workDir.toAbsolutePath());
     }
 
     if (properties == null) {
       Path propertyFile = workDir.resolve("settings.properties");
       if (!Files.exists(propertyFile)) {
-        Logger.getLogger(Backend.class.getName()).severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
+        LOGGER.severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
         throw new IllegalStateException("Property file not found");
       }
       Properties properties = new Properties();
       try {
         properties.load(new FileInputStream(propertyFile.toFile()));
       } catch (IOException e) {
-        Logger.getLogger(Backend.class.getName()).severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
+        LOGGER.severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
         throw new IllegalStateException("Property file not found");
       }
       this.properties = properties;
@@ -56,7 +58,7 @@ public class Backend {
     }
   }
 
-  public Analyzer retrieve(String language, String languageVersion) {
+  Analyzer retrieve(String language, String languageVersion) {
     AnalyzerId id = AnalyzerId.of(language, languageVersion);
     Analyzer analyzer = analyzerRepository.get(id);
     if (analyzer == null) {
@@ -68,12 +70,12 @@ public class Backend {
     return analyzer;
   }
 
-  public String load(String uuid) {
+  String load(String uuid) {
     init();
     return sourceRepository.load(uuid);
   }
 
-  public String store(String code) {
+  String store(String code) {
     init();
     return sourceRepository.store(code);
   }
