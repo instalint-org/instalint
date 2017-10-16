@@ -33,7 +33,7 @@ class Backend {
 
     if (properties == null) {
       Path propertyFile = workDir.resolve("settings.properties");
-      if (!Files.exists(propertyFile)) {
+      if (!propertyFile.toFile().exists()) {
         LOGGER.severe(() -> "Property file not found: " + propertyFile.toAbsolutePath());
         throw new IllegalStateException("Property file not found");
       }
