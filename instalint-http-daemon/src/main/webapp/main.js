@@ -208,9 +208,6 @@ function setCode(code) {
 }
 
 function analyze(store) {
-    if (!store) {
-        storedAs = "";
-    }
     console.log("analyze");
     document.getElementById("output").style.opacity = 0.5;
     var loc = window.location;
