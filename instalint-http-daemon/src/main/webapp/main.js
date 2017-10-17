@@ -101,7 +101,6 @@ function getCurrentLanguage() {
 }
 
 function setNewLanguage(language) {
-    console.log(language);
     const languageButtons = document.getElementsByClassName("languageButton");
     for (let i=0; i < languageButtons.length; i++) {
       const languageButton = languageButtons[i];
@@ -208,7 +207,6 @@ function setCode(code) {
 }
 
 function analyze(store) {
-    console.log("analyze");
     document.getElementById("output").style.opacity = 0.5;
     var loc = window.location;
     var baseUrl = loc.protocol + "//" + loc.hostname + (loc.port? ":"+loc.port : "") + "/" + loc.pathname.split('/')[1];
