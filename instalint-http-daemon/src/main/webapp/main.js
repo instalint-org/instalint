@@ -31,8 +31,7 @@ function onLocationHashChange() {
 
 function onLanguageChange() {
     languageVersion = "latest";
-    updateLocationHash();
-    analyze(false);
+    analyzeUserInput();
 }
 
 function onInput() {
@@ -40,11 +39,17 @@ function onInput() {
 
     var code = getCode();
     if (Math.abs(code.length - lastCodeLength) > minLengthDifferenceToSkipTimeout) {
-        analyze(false);
+        analyzeUserInput();
     } else {
-        onTheFlyAnalysisTimeout = setTimeout(() => analyze(false), doneTypingInterval);
+        onTheFlyAnalysisTimeout = setTimeout(() => analyzeUserInput(), doneTypingInterval);
     }
     lastCodeLength = code.length;
+}
+
+function analyzeUserInput() {
+    storedAs = "";
+    updateLocationHash();
+    analyze(false);
 }
 
 function onStoreRequest() {
